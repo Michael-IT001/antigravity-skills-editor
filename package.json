@@ -1,0 +1,37 @@
+{
+    "name": "antigravity-skills-editor",
+    "displayName": "Antigravity Skills Editor",
+    "description": "A powerful, multi-language skills management plugin for Antigravity. Create, edit, import, and delete your AI skills with ease.",
+    "publisher": "antigravity",
+    "version": "1.0.0",
+    "engines": {
+        "vscode": "^1.60.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "keywords": [
+        "antigravity",
+        "skills",
+        "ai",
+        "editor",
+        "multi-language"
+    ],
+    "activationEvents": [
+        "*"
+    ],
+    "main": "./src/extension.js",
+    "contributes": {
+        "commands": [
+            {
+                "command": "antigravity-skills-editor.openSkillsEditor",
+                "title": "Open Skills Editor"
+            }
+        ]
+    },
+    "repository": {
+        "type": "git",
+        "url": ""
+    },
+    "license": "MIT"
+}
