@@ -62,6 +62,9 @@ class SkillsPanel {
                     case 'createSkill':
                         this._createSkill(message.skillName, message.isGlobal);
                         return;
+                    case 'writeToClipboardExact':
+                        this._writeToClipboardExact(message.payload, message.count);
+                        return;
                     case 'changeLang':
                         this._changeLang(message.lang);
                         return;
@@ -120,13 +123,13 @@ class SkillsPanel {
         // Project skills
         const wsPath = this._getWorkspacePath();
         if (wsPath) {
-            const projectDirs = ['cursor_skills', '.agents/workflows', '.cursor/skills', '.agents'];
+            const projectDirs = ['.agent/skills', '.agents/workflows', '.cursor/skills', '.agents'];
             let found = null;
             for (const dir of projectDirs) {
                 const fullPath = path.join(wsPath, dir);
                 if (fs.existsSync(fullPath)) { found = fullPath; break; }
             }
-            dirs.push({ path: found || path.join(wsPath, 'cursor_skills'), type: 'Project' });
+            dirs.push({ path: found || path.join(wsPath, '.agent/skills'), type: 'Project' });
         }
         return dirs;
     }
@@ -154,7 +157,7 @@ class SkillsPanel {
                     }
                 }
             } catch (e) {
-                console.error('Failed to read skills directory:', e);
+                // Silently skip unreadable directories to avoid exposing system paths in logs
             }
         }
         skills.sort((a, b) => a.name.localeCompare(b.name));
@@ -203,7 +206,7 @@ class SkillsPanel {
         } else {
             const wsPath = this._getWorkspacePath();
             if (!wsPath) { vscode.window.showErrorMessage(t.wsError); return; }
-            targetDir = path.join(wsPath, 'cursor_skills');
+            targetDir = path.join(wsPath, '.agent/skills');
         }
 
         try {
@@ -243,7 +246,7 @@ class SkillsPanel {
         } else {
             const wsPath = this._getWorkspacePath();
             if (!wsPath) { vscode.window.showErrorMessage(t.wsError); return; }
-            targetDir = path.join(wsPath, 'cursor_skills');
+            targetDir = path.join(wsPath, '.agent/skills');
         }
         try {
             if (!fs.existsSync(targetDir)) fs.mkdirSync(targetDir, { recursive: true });
@@ -256,6 +259,23 @@ class SkillsPanel {
             this._panel.webview.postMessage({ command: 'loadSkills', skills: this._getSkills() });
         } catch (err) {
             vscode.window.showErrorMessage(t.createFailed + ' ' + err.message);
+        }
+    }
+
+    _writeToClipboardExact(payload, count) {
+        try {
+            if (!payload || count === 0) {
+                vscode.env.clipboard.writeText('');
+                vscode.window.showInformationMessage(this._i18n.deselected);
+            } else {
+                vscode.env.clipboard.writeText(payload);
+                const msg = this._i18n.copySuccess
+                    .replace('{0}', count)
+                    .replace('{1}', count > 1 ? 's' : '');
+                vscode.window.showInformationMessage(msg);
+            }
+        } catch (err) {
+            vscode.window.showErrorMessage(this._i18n.saveFailed + ' ' + err.message);
         }
     }
 
@@ -298,8 +318,9 @@ class SkillsPanel {
                     }
 
                     .sidebar {
-                        width: var(--sidebar-width);
-                        min-width: var(--sidebar-width);
+                        width: 30%;
+                        min-width: 200px;
+                        max-width: 400px;
                         background-color: var(--vscode-sideBar-background);
                         border-right: 1px solid var(--vscode-widget-border, var(--vscode-panel-border));
                         display: flex;
@@ -380,6 +401,7 @@ class SkillsPanel {
                         display: flex;
                         flex-direction: column;
                         background-color: var(--vscode-editor-background);
+                        min-width: 0;
                     }
 
                     .editor-header {
@@ -414,16 +436,42 @@ class SkillsPanel {
                         background-color: var(--vscode-button-background);
                         color: var(--vscode-button-foreground);
                         border: none;
-                        padding: 6px 14px;
+                        height: 28px;
+                        padding: 0 12px;
                         font-size: 12px;
                         border-radius: 2px;
                         cursor: pointer;
                         font-weight: 500;
-                        transition: background-color var(--transition-speed);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 6px;
+                        transition: all var(--transition-speed);
+                        white-space: nowrap;
                     }
 
                     .save-btn:hover {
                         background-color: var(--vscode-button-hoverBackground);
+                    }
+
+                    .save-btn span {
+                        display: inline-block;
+                    }
+
+                    .save-btn.icon-only {
+                        padding: 0;
+                        width: 28px;
+                    }
+
+                    .save-btn.secondary {
+                        background-color: var(--vscode-button-secondaryBackground, transparent);
+                        color: var(--vscode-foreground);
+                        border: 1px solid var(--vscode-button-border, var(--vscode-widget-border));
+                    }
+
+                    .save-btn.destructive {
+                        background-color: var(--vscode-errorForeground);
+                        color: var(--vscode-button-foreground);
                     }
 
                     .editor-container {
@@ -555,13 +603,61 @@ class SkillsPanel {
                         background-color: var(--vscode-button-hoverBackground);
                     }
 
-                    .icon {
-                        width: 16px;
-                        height: 16px;
-                        fill: currentColor;
+                    .icon-container {
+                        width: 20px;
+                        height: 20px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        margin-right: 8px;
+                        border-radius: 4px;
+                        cursor: pointer;
+                        transition: all var(--transition-speed);
                     }
 
-                    /* Language Selector */
+                    .icon-container:hover {
+                        background: rgba(128,128,128,0.2);
+                    }
+
+                    .skill-item.selected .icon-container {
+                        background: var(--vscode-button-background);
+                        color: var(--vscode-button-foreground);
+                    }
+
+                    @media (max-width: 600px) {
+                        .sidebar {
+                            width: 100%;
+                            flex: none;
+                            max-width: none;
+                            height: 40%;
+                            border-right: none;
+                            border-bottom: 1px solid var(--vscode-widget-border, var(--vscode-panel-border));
+                        }
+                        body {
+                            flex-direction: column;
+                        }
+                        .editor-header {
+                            padding: 0 12px;
+                        }
+                        .skill-path {
+                            display: none;
+                        }
+                        .save-btn span {
+                            display: none;
+                        }
+                        .save-btn {
+                            width: 32px;
+                            padding: 0;
+                            gap: 0;
+                        }
+                    }
+
+                    @media (max-width: 350px) {
+                        .sidebar {
+                            display: none; /* In extremely narrow view, hide list if editor is active */
+                        }
+                    }
+
                     .sidebar-footer {
                         padding: 8px 12px;
                         border-top: 1px solid var(--vscode-widget-border, var(--vscode-panel-border));
@@ -594,6 +690,12 @@ class SkillsPanel {
                         opacity: 0.7;
                         flex-shrink: 0;
                     }
+
+                    .icon {
+                        width: 16px;
+                        height: 16px;
+                        fill: currentColor;
+                    }
                 </style>
             </head>
             <body>
@@ -601,6 +703,12 @@ class SkillsPanel {
                     <div class="sidebar-header">
                         <div class="sidebar-title">${t.title}</div>
                         <div class="header-actions">
+                            <button class="add-btn" id="clearBtn" title="${t.clearCart}" style="display:none; color: var(--vscode-errorForeground);">
+                                <svg class="icon" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm0 13a6 6 0 1 1 0-12 6 6 0 0 1 0 12z"/>
+                                    <path d="M11.35 4.65a.5.5 0 0 0-.7-.7l-6 6a.5.5 0 0 0 .7.7l6-6z"/>
+                                </svg>
+                            </button>
                             <button class="add-btn" id="importBtn" title="${t.importBtn}">
                                 <svg class="icon" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M11.5 1h-7l-.5.5V5H1.5l-.5.5v9l.5.5h13l.5-.5v-9l-.5-.5H12V1.5l-.5-.5zM5 2h6v3H5V2zm9 12H2V6h12v8z"/>
@@ -667,10 +775,14 @@ class SkillsPanel {
                     const t = ${tJson};
                     let skills = [];
                     let currentIndex = -1;
+                    let selectedSkills = new Set();
+                    let selectedSkillsMap = new Map(); // to store path -> formatted markdown link
 
                     const skillList = document.getElementById('skillList');
                     const mainArea = document.getElementById('mainArea');
                     const newSkillBtn = document.getElementById('newSkillBtn');
+                    const clearBtn = document.getElementById('clearBtn');
+                    const importBtn = document.getElementById('importBtn');
                     const createModal = document.getElementById('createModal');
                     const newSkillInput = document.getElementById('newSkillInput');
                     const cancelCreateBtn = document.getElementById('cancelCreateBtn');
@@ -692,29 +804,81 @@ class SkillsPanel {
                                 renderEditor(currentIndex);
                             } else {
                                 currentIndex = -1;
-                                mainArea.innerHTML = \`
-                                    <div class="empty-state">
-                                        <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-                                            <path d="M13.5 2h-12l-.5.5v11l.5.5h12l.5-.5v-11l-.5-.5zM2 3h11v1H2V3zm7 4H2V6h7v1zm0 2H2V8h7v1zm-3 2H2v-1h4v1zm7 0h-2v-1h2v1zm0-2h-2V8h2v1zm0-2h-2V6h2v1z"/>
-                                        </svg>
-                                        <div>\${t.noSkills}</div>
-                                    </div>
-                                \`;
+                                mainArea.innerHTML = '<div class="empty-state">'
+                                    + '<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="currentColor">'
+                                    + '<path d="M13.5 2h-12l-.5.5v11l.5.5h12l.5-.5v-11l-.5-.5zM2 3h11v1H2V3zm7 4H2V6h7v1zm0 2H2V8h7v1zm-3 2H2v-1h4v1zm7 0h-2v-1h2v1zm0-2h-2V8h2v1zm0-2h-2V6h2v1z"/>'
+                                    + '</svg>'
+                                    + '<div>' + t.noSkills + '</div>'
+                                    + '</div>';
                             }
                         }
                     });
 
+                    let lastSelectedIndex = -1;
+
                     function renderList() {
-                        skillList.innerHTML = skills.map((skill, index) => \`
-                            <div class="skill-item \${index === currentIndex ? 'active' : ''}" data-index="\${index}">
-                                <svg class="icon" style="margin-right:8px; opacity:0.8" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M13.5 2h-12l-.5.5v11l.5.5h12l.5-.5v-11l-.5-.5zM2 3h11v1H2V3zm11 10H2V5h11v8z"/>
-                                    <path d="M4 6h7v1H4V6zm0 2h7v1H4V8zm0 2h5v1H4v-1z"/>
-                                </svg>
-                                <span style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden; flex: 1;">\${skill.name}</span>
-                                \${skill.type === 'Global' ? '<span style="font-size: 9px; padding: 2px 4px; border-radius: 3px; background: rgba(128,128,128,0.2); margin-left: auto;">' + t.globalBadge + '</span>' : ''}
-                            </div>
-                        \`).join('');
+                        var html = '';
+                        for (var i = 0; i < skills.length; i++) {
+                            var skill = skills[i];
+                            var isSelected = selectedSkills.has(skill.path);
+                            var activeClass = (i === currentIndex) ? ' active' : '';
+                            var selectedClass = isSelected ? ' selected' : '';
+                            
+                            var iconColor = isSelected ? 'var(--vscode-button-foreground)' : 'var(--vscode-descriptionForeground)';
+                            var iconOpacity = isSelected ? '1' : '0.6';
+                            
+                            var iconHtml = '<div class="icon-container" data-action="toggle-select">'
+                                + '<svg class="icon" style="color:' + iconColor + '; opacity:' + iconOpacity + '" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">'
+                                + '<circle cx="8" cy="8" r="6" fill="currentColor" opacity="0.3"/>'
+                                + '<text x="8" y="11" text-anchor="middle" font-size="9" font-weight="bold" fill="currentColor">@</text>'
+                                + '</svg>'
+                                + '</div>';
+
+                            var badge = (skill.type === 'Global') ? '<span style="font-size:9px;padding:2px 4px;border-radius:3px;background:rgba(128,128,128,0.2);margin-left:auto;">' + t.globalBadge + '</span>' : '';
+                            
+                            html += '<div class="skill-item' + activeClass + selectedClass + '" data-index="' + i + '">'
+                                + iconHtml
+                                + '<span style="text-overflow:ellipsis;white-space:nowrap;overflow:hidden;flex:1;">' + skill.name + '</span>'
+                                + badge
+                                + '</div>';
+                        }
+                        skillList.innerHTML = html;
+                        
+                        // Update clear button visibility
+                        if (clearBtn) {
+                            clearBtn.style.display = (selectedSkills.size > 0) ? 'flex' : 'none';
+                        }
+                    }
+
+                    function toggleSkillSelection(index, force) {
+                        const skill = skills[index];
+                        if (!skill) return;
+                        
+                        if (force === true) {
+                            selectedSkills.add(skill.path);
+                            selectedSkillsMap.set(skill.path, '[' + skill.name + '](file://' + skill.path + ')');
+                        } else if (force === false) {
+                            selectedSkills.delete(skill.path);
+                            selectedSkillsMap.delete(skill.path);
+                        } else {
+                            if (selectedSkills.has(skill.path)) {
+                                selectedSkills.delete(skill.path);
+                                selectedSkillsMap.delete(skill.path);
+                            } else {
+                                selectedSkills.add(skill.path);
+                                selectedSkillsMap.set(skill.path, '[' + skill.name + '](file://' + skill.path + ')');
+                            }
+                        }
+                        
+                        renderList();
+                        if (currentIndex === index) renderEditor(index);
+                        
+                        var payloadArray = Array.from(selectedSkillsMap.values());
+                        vscode.postMessage({ 
+                            command: 'writeToClipboardExact', 
+                            payload: payloadArray.join(' '), 
+                            count: payloadArray.length 
+                        });
                     }
 
                     function renderEditor(index) {
@@ -724,25 +888,45 @@ class SkillsPanel {
                         const skill = skills[index];
                         if (!skill) return;
 
-                        mainArea.innerHTML = \`
-                            <div class="editor-header">
-                                <div class="skill-title-container">
-                                    <div class="skill-title">\${skill.name}</div>
-                                    <div class="skill-path">\${skill.path}</div>
-                                </div>
-                                <div style="display:flex; gap:8px;">
-                                    <button class="save-btn" id="deleteBtn" style="background-color:var(--vscode-errorForeground); color:var(--vscode-button-foreground); width:32px; padding:6px; display:flex; align-items:center; justify-content:center;" title="\${t.deleteConfirmTitle}">
-                                        <svg class="icon" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M14 3h-3V1H5v2H2v1h1v11h10V4h1V3zM6 2h4v1H6V2zm6 12H4V4h8v10z"/><path d="M6 6h1v6H6zm3 0h1v6H9z"/></svg>
-                                    </button>
-                                    <button class="save-btn" id="saveBtn">\${t.saveBtn}</button>
-                                </div>
-                            </div>
-                            <div class="editor-container">
-                                <textarea id="skillContent" spellcheck="false"></textarea>
-                            </div>
-                        \`;
+                        mainArea.innerHTML = '<div class="editor-header">'
+                            + '<div class="skill-title-container" style="min-width: 0; flex: 1; margin-right: 12px;">'
+                            + '<div class="skill-title" style="text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">' + skill.name + '</div>'
+                            + '<div class="skill-path" style="text-overflow: ellipsis; overflow: hidden; white-space: nowrap; opacity: 0.7;">' + skill.path + '</div>'
+                            + '</div>'
+                            + '<div style="display:flex; gap:6px; flex-shrink: 0;">'
+                            + (skill.type === 'Global' ? 
+                                '<button class="save-btn secondary" id="copyToChatBtn" title="' + t.copyToChat + '">'
+                                + '<svg class="icon" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M4 4h4v1H4V4zm0 2h5v1H4V6zm0 2h5v1H4V8zm7.5-6H3l-.5.5v11l.5.5h8l.5-.5V4.5L11.5 2zM3 14V3h8v11H3zM13 1h-8v1h8v12h1V1.5l-.5-.5h-.5z"/></svg>'
+                                + '<span>' + t.copyToChat + '</span>'
+                                + '</button>' : '')
+                            + '<button class="save-btn destructive icon-only" id="deleteBtn" title="' + t.deleteConfirmTitle + '">'
+                            + '<svg class="icon" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M14 3h-3V1H5v2H2v1h1v11h10V4h1V3zM6 2h4v1H6V2zm6 12H4V4h8v10z"/><path d="M6 6h1v6H6zm3 0h1v6H9z"/></svg>'
+                            + '</button>'
+                            + '<button class="save-btn" id="saveBtn" title="' + t.saveBtn + '">'
+                            + '<svg class="icon" style="margin-right:0;" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M13 1H3l-1.5 1.5v11L3 15h10l1.5-1.5v-11L13 1zM3 14V3h9v11H3zm7-10H4v4h6V4z"/></svg>'
+                            + '<span>' + t.saveBtn + '</span>'
+                            + '</button>'
+                            + '</div>'
+                            + '</div>'
+                            + '<div class="editor-container">'
+                            + '<textarea id="skillContent" spellcheck="false"></textarea>'
+                            + '</div>';
 
                         document.getElementById('skillContent').value = skill.content;
+
+                        const copyToChatBtn = document.getElementById('copyToChatBtn');
+                        if (copyToChatBtn) {
+                            // Update button visual based on current state
+                            if (selectedSkills.has(skill.path)) {
+                                copyToChatBtn.style.backgroundColor = 'var(--vscode-button-background)';
+                                copyToChatBtn.style.color = 'var(--vscode-button-foreground)';
+                                copyToChatBtn.innerHTML = '<svg class="icon" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="6" fill="currentColor" opacity="0.3"/><text x="8" y="11" text-anchor="middle" font-size="9" font-weight="bold" fill="currentColor">@</text></svg><span>' + t.selected + '</span>';
+                            }
+
+                            copyToChatBtn.addEventListener('click', function() {
+                                toggleSkillSelection(currentIndex);
+                            });
+                        }
 
                         document.getElementById('deleteBtn').addEventListener('click', () => {
                             showConfirm(t.deleteConfirmTitle, t.deleteMsg, () => {
@@ -806,9 +990,29 @@ class SkillsPanel {
 
                     skillList.addEventListener('click', (e) => {
                         const target = e.target.closest('.skill-item');
+                        const toggleAction = e.target.closest('[data-action="toggle-select"]');
+                        
                         if (target) {
                             const index = parseInt(target.getAttribute('data-index'));
-                            renderEditor(index);
+                            
+                            if (toggleAction) {
+                                // Shift-click range selection
+                                if (e.shiftKey && lastSelectedIndex !== -1) {
+                                    const start = Math.min(lastSelectedIndex, index);
+                                    const end = Math.max(lastSelectedIndex, index);
+                                    const isSelecting = !selectedSkills.has(skills[index].path);
+                                    
+                                    for (let i = start; i <= end; i++) {
+                                        toggleSkillSelection(i, isSelecting);
+                                    }
+                                } else {
+                                    toggleSkillSelection(index);
+                                }
+                                lastSelectedIndex = index;
+                            } else {
+                                renderEditor(index);
+                                lastSelectedIndex = index;
+                            }
                         }
                     });
 
@@ -846,6 +1050,19 @@ class SkillsPanel {
                     newSkillInput.addEventListener('keydown', (e) => {
                         if (e.key === 'Enter') { e.preventDefault(); createSkill(); }
                         else if (e.key === 'Escape') closeCreateModal();
+                    });
+
+                    clearBtn.addEventListener('click', () => {
+                        selectedSkills.clear();
+                        selectedSkillsMap.clear();
+                        renderList();
+                        if (currentIndex !== -1) renderEditor(currentIndex);
+                        
+                        vscode.postMessage({ 
+                            command: 'writeToClipboardExact', 
+                            payload: '', 
+                            count: 0 
+                        });
                     });
 
                     // Request skills on load
