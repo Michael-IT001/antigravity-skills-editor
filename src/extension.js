@@ -6,7 +6,7 @@ const translations = require('./i18n');
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
-    console.log('Antigravity Skills Editor is now active!');
+
 
     let lang = context.globalState.get('antigravitySkillsLang');
     if (!lang) {
