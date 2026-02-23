@@ -25,7 +25,12 @@ const translations = {
         wsError: "No workspace folder open to save project skills.",
         createFailed: "Failed to create skill:",
         deleteFailed: "Failed to delete skill:",
-        saveFailed: "Failed to save skill:"
+        saveFailed: "Failed to save skill:",
+        selected: "Selected",
+        copySuccess: "Copied! ({0} skill{1} in clipboard)",
+        deselected: "Skill deselected.",
+        clearCart: "Clear Selection",
+        copyToChat: "Copy to Chat"
     },
     'zh-cn': {
         name: "🇨🇳 简体中文",
@@ -53,7 +58,12 @@ const translations = {
         wsError: "未打开任何工作区，无法进行项目级保存。",
         createFailed: "创建技能失败：",
         deleteFailed: "删除技能失败：",
-        saveFailed: "保存技能失败："
+        saveFailed: "保存技能失败：",
+        selected: "已选择",
+        copySuccess: "已复制！（剪贴板中共有 {0} 个技能）",
+        deselected: "已取消选择。",
+        clearCart: "清空全部选择",
+        copyToChat: "复制到对话"
     },
     'zh-tw': {
         name: "🇹🇼 繁體中文",
@@ -81,7 +91,12 @@ const translations = {
         wsError: "未開啟任何工作區，無法進行專案級儲存。",
         createFailed: "建立技能失敗：",
         deleteFailed: "刪除技能失敗：",
-        saveFailed: "儲存技能失敗："
+        saveFailed: "儲存技能失敗：",
+        selected: "已選擇",
+        copySuccess: "已複製！（剪貼板中共有 {0} 個技能）",
+        deselected: "已取消選擇。",
+        clearCart: "清空全部選擇",
+        copyToChat: "複製到對話"
     },
     'ja': {
         name: "🇯🇵 日本語",
@@ -109,7 +124,12 @@ const translations = {
         wsError: "ワークスペースが開かれていないため、プロジェクトの保存ができません。",
         createFailed: "スキルの作成に失敗しました:",
         deleteFailed: "スキルの削除に失敗しました:",
-        saveFailed: "スキルの保存に失敗しました:"
+        saveFailed: "スキルの保存に失敗しました:",
+        selected: "選択済み",
+        copySuccess: "コピーしました！（クリップボードに {0} 個のスキル）",
+        deselected: "選択を解除しました。",
+        clearCart: "選択をすべて解除",
+        copyToChat: "チャットにコピー"
     },
     'de': {
         name: "🇩🇪 Deutsch",
@@ -137,7 +157,12 @@ const translations = {
         wsError: "Kein Arbeitsbereich geöffnet, um Projekt-Skills zu speichern.",
         createFailed: "Fehler beim Erstellen des Skills:",
         deleteFailed: "Fehler beim Löschen des Skills:",
-        saveFailed: "Fehler beim Speichern des Skills:"
+        saveFailed: "Fehler beim Speichern des Skills:",
+        selected: "Ausgewählt",
+        copySuccess: "Kopiert! ({0} Skill{1} in der Zwischenablage)",
+        deselected: "Skill deselektiert.",
+        clearCart: "Auswahl aufheben",
+        copyToChat: "In Chat kopieren"
     },
     'es': {
         name: "🇪🇸 Español",
@@ -165,7 +190,12 @@ const translations = {
         wsError: "No hay espacio de trabajo abierto para guardar habilidades de proyecto.",
         createFailed: "Fallo al crear la habilidad:",
         deleteFailed: "Fallo al eliminar la habilidad:",
-        saveFailed: "Fallo al guardar la habilidad:"
+        saveFailed: "Fallo al guardar la habilidad:",
+        selected: "Seleccionado",
+        copySuccess: "¡Copiado! ({0} habilidad{1} en el portapapeles)",
+        deselected: "Habilidad deseleccionada.",
+        clearCart: "Limpiar selección",
+        copyToChat: "Copiar al chat"
     },
     'fr': {
         name: "🇫🇷 Français",
@@ -193,7 +223,12 @@ const translations = {
         wsError: "Aucun espace de travail ouvert pour enregistrer.",
         createFailed: "Échec de la création :",
         deleteFailed: "Échec de la suppression :",
-        saveFailed: "Échec de l'enregistrement :"
+        saveFailed: "Échec de l'enregistrement :",
+        selected: "Sélectionné",
+        copySuccess: "Copié ! ({0} compétence{1} dans le presse-papiers)",
+        deselected: "Compétence désélectionnée.",
+        clearCart: "Effacer la sélection",
+        copyToChat: "Copier dans le chat"
     },
     'it': {
         name: "🇮🇹 Italiano",
@@ -221,7 +256,12 @@ const translations = {
         wsError: "Nessuna cartella di lavoro aperta.",
         createFailed: "Errore nella creazione:",
         deleteFailed: "Errore nell'eliminazione:",
-        saveFailed: "Errore nel salvataggio:"
+        saveFailed: "Errore nel salvataggio:",
+        selected: "Selezionato",
+        copySuccess: "Copiato! ({0} competenza{1} negli appunti)",
+        deselected: "Competenza deselezionata.",
+        clearCart: "Cancella selezione",
+        copyToChat: "Copia nella chat"
     },
     'ko': {
         name: "🇰🇷 한국어",
@@ -249,7 +289,12 @@ const translations = {
         wsError: "작업 공간이 열려 있지 않습니다.",
         createFailed: "생성 실패:",
         deleteFailed: "삭제 실패:",
-        saveFailed: "저장 실패:"
+        saveFailed: "저장 실패:",
+        selected: "선택됨",
+        copySuccess: "복사됨! (클립보드에 {0}개의 스킬)",
+        deselected: "스킬 선택 해제됨.",
+        clearCart: "선택 모두 해제",
+        copyToChat: "대화창으로 복사"
     },
     'pt-br': {
         name: "🇧🇷 Português",
@@ -277,7 +322,12 @@ const translations = {
         wsError: "Nenhum workspace aberto.",
         createFailed: "Falha ao criar:",
         deleteFailed: "Falha ao excluir:",
-        saveFailed: "Falha ao salvar:"
+        saveFailed: "Falha ao salvar:",
+        selected: "Selecionado",
+        copySuccess: "Copiado! ({0} habilidade{1} na área de transferência)",
+        deselected: "Habilidade desmarcada.",
+        clearCart: "Limpar Seleção",
+        copyToChat: "Copiar para o Chat"
     },
     'ru': {
         name: "🇷🇺 Русский",
@@ -305,7 +355,12 @@ const translations = {
         wsError: "Рабочая область не открыта.",
         createFailed: "Ошибка создания:",
         deleteFailed: "Ошибка удаления:",
-        saveFailed: "Ошибка сохранения:"
+        saveFailed: "Ошибка сохранения:",
+        selected: "Выбрано",
+        copySuccess: "Скопировано! ({0} навык{1} в буфер обмена)",
+        deselected: "Навык отменен.",
+        clearCart: "Очистить всё",
+        copyToChat: "Копировать в чат"
     },
     'tr': {
         name: "🇹🇷 Türkçe",
@@ -333,7 +388,12 @@ const translations = {
         wsError: "Açık bir çalışma alanı yok.",
         createFailed: "Oluşturulamadı:",
         deleteFailed: "Silinemedi:",
-        saveFailed: "Kaydedilemedi:"
+        saveFailed: "Kaydedilemedi:",
+        selected: "Seçili",
+        copySuccess: "Kopyalandı! (Panoda {0} yetenek)",
+        deselected: "Yetenek seçimi kaldırıldı.",
+        clearCart: "Seçimi Temizle",
+        copyToChat: "Sohbete Kopyala"
     },
     'pl': {
         name: "🇵🇱 Polski",
@@ -361,7 +421,12 @@ const translations = {
         wsError: "Brak otwartego obszaru roboczego.",
         createFailed: "Błąd tworzenia:",
         deleteFailed: "Błąd usuwania:",
-        saveFailed: "Błąd zapisywania:"
+        saveFailed: "Błąd zapisywania:",
+        selected: "Wybrane",
+        copySuccess: "Skopiowano! ({0} umiejętność{1} w schowku)",
+        deselected: "Umiejętność odznaczona.",
+        clearCart: "Wyczyść zaznaczenie",
+        copyToChat: "Kopiuj do czatu"
     },
     'cs': {
         name: "🇨🇿 Čeština",
@@ -389,7 +454,12 @@ const translations = {
         wsError: "Není otevřen žádný pracovní prostor.",
         createFailed: "Chyba vytvoření:",
         deleteFailed: "Chyba smazání:",
-        saveFailed: "Chyba uložení:"
+        saveFailed: "Chyba uložení:",
+        selected: "Vybráno",
+        copySuccess: "Kopírováno! ({0} dovednost{1} v schránce)",
+        deselected: "Dovednost odznačena.",
+        clearCart: "Zrušit výběr",
+        copyToChat: "Kopírovat do chatu"
     },
     'ar': {
         name: "🇸🇦 العربية",
@@ -417,7 +487,12 @@ const translations = {
         wsError: "لا يوجد مساحة عمل مفتوحة.",
         createFailed: "فشل الإنشاء:",
         deleteFailed: "فشل الحذف:",
-        saveFailed: "فشل الحفظ:"
+        saveFailed: "فشل الحفظ:",
+        selected: "محدد",
+        copySuccess: "تم النسخ! ({0} مهارة{1} في الحافظة)",
+        deselected: "تم إلغاء تحديد المهارة.",
+        clearCart: "مسح التحديد",
+        copyToChat: "نسخ إلى الدردشة"
     },
     'vi': {
         name: "🇻🇳 Tiếng Việt",
@@ -445,7 +520,12 @@ const translations = {
         wsError: "Không mở không gian làm việc nào.",
         createFailed: "Lỗi khi tạo:",
         deleteFailed: "Lỗi xóa:",
-        saveFailed: "Lỗi khi lưu viên:"
+        saveFailed: "Lỗi khi lưu viên:",
+        selected: "Đã chọn",
+        copySuccess: "Đã sao chép! ({0} kỹ năng trong bộ nhớ tạm)",
+        deselected: "Đã bỏ chọn kỹ năng.",
+        clearCart: "Xoá tất cả lựa chọn",
+        copyToChat: "Sao chép vào hội thoại"
     }
 };
 
