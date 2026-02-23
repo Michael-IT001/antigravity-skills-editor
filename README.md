@@ -9,20 +9,25 @@
 
 | Feature | Description |
 |---------|-------------|
-| 🌍 **16 Languages** | Auto-detects your editor language, or switch manually with one click |
-| 📝 **Full Editor** | Built-in markdown editor with syntax-friendly monospace font |
-| 🗂️ **Global + Project** | Skills can be scoped globally (available everywhere) or per-project |
-| 📦 **Import** | Drag in `.md` files or entire skill folders from anywhere on your system |
-| 🗑️ **Safe Delete** | Confirmation dialogs prevent accidental data loss |
-| 💾 **Quick Save** | Press `Ctrl/Cmd + S` inside the editor to save instantly |
-| 🎨 **Native Theme** | Seamlessly adapts to any VS Code / Antigravity color theme |
+| 🛒 **@ Icon Cart** | Direct-to-clipboard selection. Clicking the `@` icon instantly toggles skills. |
+| ⚡ **Multi-Select** | Use **Shift + Click** on icons to select ranges of skills in seconds. |
+| 📱 **Adaptive UI** | Toolbars intelligently transform text to icons in narrow views to prevent overlap. |
+| 🌍 **16 Languages** | Auto-detects your editor language, or switch manually with one click. |
+| 📝 **Full Editor** | Built-in markdown editor with syntax-friendly monospace font. |
+| 🗂️ **Global + Project** | Skills can be scoped globally (available everywhere) or per-project. |
+| 📦 **Import** | Drag in `.md` files or entire skill folders from anywhere on your system. |
+| 🗑️ **Safe Delete** | Confirmation dialogs prevent accidental data loss. |
+| 💾 **Quick Save** | Press `Ctrl/Cmd + S` inside the editor to save instantly. |
 
 ---
 
 ## 📸 Screenshots
 
 ### Skill Editor Panel
-The main interface features a sidebar with your skill list and a full-width editor area.
+The main interface features a sidebar with your skill list and a full-width editor area. Now featuring a universal **@ icon system** for clean selection.
+
+### Adaptive Responsiveness
+The UI intelligently adapts to window resizing. Button labels automatically collapse into icons when space is tight, and the path detail folds away to prioritize readability.
 
 ### Language Switcher
 A globe icon in the sidebar footer lets you switch between 16 supported languages instantly.
@@ -46,15 +51,11 @@ The extension **automatically detects** your editor's display language on first 
 
 ### Installation
 
-#### From Open VSX Marketplace
-1. Open the **Extensions** panel in your editor.
-2. Search for **"Antigravity Skills Editor"**.
-3. Click **Install** and reload the window.
-
 #### Manual Installation
-1. Download or clone this repository.
-2. Copy the folder into your editor's extensions directory.
-3. Reload the window (`Cmd/Ctrl + Shift + P` → `Developer: Reload Window`).
+1. Download the latest `.vsix` from the [Releases](https://github.com/Michael-IT001/antigravity-skills-editor/releases) page.
+2. In Antigravity/VS Code, open the Extensions panel.
+3. Click the "..." menu and select **"Install from VSIX..."**.
+4. Select the downloaded file and reload the window.
 
 ### First Use
 1. After installation, look for the **Skills** button in the bottom status bar.
@@ -97,6 +98,11 @@ Click the **+** button in the sidebar header. A modal dialog will appear where y
 
 ### Editing Skills
 Click any skill in the sidebar to open it in the editor. The content is displayed in a monospace editor optimized for markdown. Press **Ctrl/Cmd + S** to quick-save, or click the **Save** button in the toolbar.
+
+### Using the @ Icon Cart (Selection)
+- **Direct Selection**: Click the `@` icon next to any skill in the sidebar to toggle its selection state. Selected skills turn blue.
+- **Range Selection**: Hold the **Shift** key while clicking the `@` icons to select or deselect a range of skills instantly.
+- **Clipboard Sync**: Your selection is automatically synced to the system clipboard as a list of Markdown links. Simply press `Cmd/Ctrl + V` in your chat to use them!
 
 ### Importing Skills
 Click the **Import** button (archive icon) in the sidebar header. You can select:
@@ -175,7 +181,7 @@ Contributions are welcome! Here are some ways you can help:
 
 ## 📄 License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the [MIT License](https://github.com/Michael-IT001/antigravity-skills-editor/blob/HEAD/LICENSE).
 
 ---
 
