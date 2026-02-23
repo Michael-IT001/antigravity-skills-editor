@@ -2,8 +2,47 @@
 
 All notable changes to the **Antigravity Skills Editor** will be documented in this file.
 
-## [1.0.0] - 2026-02-22
+## [1.0.17] - 2026-02-23 (Current)
+- 🐛 **Critical UI Fix**: Resolved a regression where CSS source code was leaking into the UI as raw text.
+- 🏗️ **Structural Hardening**: Sanitized HTML/CSS injection in the webview to ensure consistent rendering across all environments.
 
+## [1.0.16] - 2026-02-23
+- 🎨 **Intelligent Responsive Layout**: The UI now adapts dynamically to sidebar resizing.
+- 📱 **Adaptive Toolbars**: Button text automatically transforms into clean, centered icons in narrow views, preventing layout overlap.
+- 🏷️ **Smart Header**: The skill path intelligently hides when space is limited, prioritizing the skill title.
+- 💎 **Premium Aesthetic Refactoring**: Optimized editor padding and button spacing for a more high-end feel.
+
+## [1.0.15] - 2026-02-23
+- ✨ **Universal `@` Icon System**: All skills now feature a consistent `@` icon for a cleaner, unified look.
+- 🛒 **Icon-Direct Selection**: Click the `@` icon directly to toggle skills. Selected skills light up in vibrant blue.
+- ⚡ **Shift + Click Multi-select**: Implementation of range selection—hold Shift while clicking icons to select multiple skills instantly.
+- 🌍 **Full Localization**: All selection notifications and button states are now fully translated across 16 languages.
+
+## [1.0.13] - 2026-02-23
+- 🐛 Fixed critical Webview templating issues with safe string concatenation.
+- 🧹 Added "Clear Selection" icon to sidebar header for easier clipboard management.
+- 🌍 Completed translations for all UI elements.
+
+## [1.0.9] - 2026-02-23
+- 🐛 Rendering stability improvements.
+
+## [1.0.8] - 2026-02-23
+- ✨ Introduced frontend skill selection state management for the clipboard cart feature.
+
+## [1.0.7] - 2026-02-23
+- 📦 Added smart clipboard accumulation: multiple Global skills can be chained into a single clipboard payload.
+
+## [1.0.6] - 2026-02-23
+- 📋 Added `Copy to Chat` button for Global Skills, allowing one-click copy of a Markdown skill reference to paste directly into your AI chat.
+
+## [1.0.5] - 2026-02-23
+- 📦 UI improvements for Global Skills panel actions.
+
+## [1.0.1] - 2026-02-22
+- 🌍 Expanded localization to 16 languages.
+- 🔒 Code hardening and stability improvements for public release.
+
+## [1.0.0] - 2026-02-22
 ### Added
 - 🎉 Initial public release
 - 📝 Full skill CRUD (Create, Read, Update, Delete)
