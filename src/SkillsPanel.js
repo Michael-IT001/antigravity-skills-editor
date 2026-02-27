@@ -68,6 +68,9 @@ class SkillsPanel {
                     case 'changeLang':
                         this._changeLang(message.lang);
                         return;
+                    case 'saveOrder':
+                        this._saveOrder(message.order);
+                        return;
                 }
             },
             null,
@@ -157,11 +160,27 @@ class SkillsPanel {
                     }
                 }
             } catch (e) {
-                // Silently skip unreadable directories to avoid exposing system paths in logs
+                console.error('Failed to read skills directory:', e);
             }
         }
-        skills.sort((a, b) => a.name.localeCompare(b.name));
+        const savedOrder = this._context.globalState.get('antigravitySkillsOrder', []);
+        if (savedOrder && savedOrder.length > 0) {
+            skills.sort((a, b) => {
+                const idxA = savedOrder.indexOf(a.path);
+                const idxB = savedOrder.indexOf(b.path);
+                if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+                if (idxA !== -1) return -1;
+                if (idxB !== -1) return 1;
+                return a.name.localeCompare(b.name);
+            });
+        } else {
+            skills.sort((a, b) => a.name.localeCompare(b.name));
+        }
         return skills;
+    }
+
+    _saveOrder(order) {
+        this._context.globalState.update('antigravitySkillsOrder', order);
     }
 
     _saveSkill(skillPath, content) {
@@ -318,14 +337,29 @@ class SkillsPanel {
                     }
 
                     .sidebar {
-                        width: 30%;
-                        min-width: 200px;
-                        max-width: 400px;
+                        width: var(--sidebar-width);
+                        min-width: 150px;
+                        max-width: 80%;
                         background-color: var(--vscode-sideBar-background);
                         border-right: 1px solid var(--vscode-widget-border, var(--vscode-panel-border));
                         display: flex;
                         flex-direction: column;
                         z-index: 10;
+                        position: relative;
+                    }
+
+                    .resizer {
+                        width: 4px;
+                        cursor: col-resize;
+                        background-color: transparent;
+                        transition: background-color 0.2s;
+                        z-index: 20;
+                        margin-right: -2px;
+                        margin-left: -2px;
+                    }
+
+                    .resizer:hover, .resizer.active {
+                        background-color: var(--vscode-focusBorder);
                     }
 
                     .sidebar-header {
@@ -394,6 +428,15 @@ class SkillsPanel {
                         background-color: var(--vscode-list-activeSelectionBackground);
                         color: var(--vscode-list-activeSelectionForeground);
                         position: relative;
+                    }
+
+                    .skill-item.dragging {
+                        opacity: 0.5;
+                        background-color: var(--vscode-list-dropBackground);
+                    }
+
+                    .skill-item.drag-over {
+                        border-top: 2px solid var(--vscode-focusBorder);
                     }
 
                     .main-area {
@@ -699,7 +742,7 @@ class SkillsPanel {
                 </style>
             </head>
             <body>
-                <div class="sidebar">
+                <div class="sidebar" id="sidebar">
                     <div class="sidebar-header">
                         <div class="sidebar-title">${t.title}</div>
                         <div class="header-actions">
@@ -730,6 +773,7 @@ class SkillsPanel {
                         <select class="lang-select" id="langSelect">${langOptions}</select>
                     </div>
                 </div>
+                <div class="resizer" id="resizer"></div>
 
                 <div class="main-area" id="mainArea">
                     <div class="empty-state">
@@ -836,7 +880,7 @@ class SkillsPanel {
 
                             var badge = (skill.type === 'Global') ? '<span style="font-size:9px;padding:2px 4px;border-radius:3px;background:rgba(128,128,128,0.2);margin-left:auto;">' + t.globalBadge + '</span>' : '';
                             
-                            html += '<div class="skill-item' + activeClass + selectedClass + '" data-index="' + i + '">'
+                            html += '<div class="skill-item' + activeClass + selectedClass + '" data-index="' + i + '" draggable="true">'
                                 + iconHtml
                                 + '<span style="text-overflow:ellipsis;white-space:nowrap;overflow:hidden;flex:1;">' + skill.name + '</span>'
                                 + badge
@@ -1067,6 +1111,106 @@ class SkillsPanel {
 
                     // Request skills on load
                     vscode.postMessage({ command: 'requestSkills' });
+
+                    // Resizer Logic
+                    const resizer = document.getElementById('resizer');
+                    const sidebar = document.getElementById('sidebar');
+                    let isResizing = false;
+
+                    resizer.addEventListener('mousedown', (e) => {
+                        isResizing = true;
+                        resizer.classList.add('active');
+                        document.body.style.cursor = 'col-resize';
+                        document.addEventListener('mousemove', handleMouseMove);
+                        document.addEventListener('mouseup', stopResizing);
+                    });
+
+                    function handleMouseMove(e) {
+                        if (!isResizing) return;
+                        const newWidth = e.clientX;
+                        if (newWidth > 150 && newWidth < window.innerWidth * 0.8) {
+                            sidebar.style.width = newWidth + 'px';
+                            document.documentElement.style.setProperty('--sidebar-width', newWidth + 'px');
+                        }
+                    }
+
+                    function stopResizing() {
+                        isResizing = false;
+                        resizer.classList.remove('active');
+                        document.body.style.cursor = 'default';
+                        document.removeEventListener('mousemove', handleMouseMove);
+                        document.removeEventListener('mouseup', stopResizing);
+                    }
+
+                    // Drag and Drop Logic for Reordering
+                    let draggedItemIndex = -1;
+
+                    skillList.addEventListener('dragstart', (e) => {
+                        const item = e.target.closest('.skill-item');
+                        if (item) {
+                            draggedItemIndex = parseInt(item.getAttribute('data-index'));
+                            item.classList.add('dragging');
+                            e.dataTransfer.effectAllowed = 'move';
+                            e.dataTransfer.setData('text/plain', draggedItemIndex);
+                        }
+                    });
+
+                    skillList.addEventListener('dragover', (e) => {
+                        e.preventDefault();
+                        const item = e.target.closest('.skill-item');
+                        if (item) {
+                            item.classList.add('drag-over');
+                            e.dataTransfer.dropEffect = 'move';
+                        }
+                    });
+
+                    skillList.addEventListener('dragleave', (e) => {
+                        const item = e.target.closest('.skill-item');
+                        if (item) {
+                            item.classList.remove('drag-over');
+                        }
+                    });
+
+                    skillList.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        const targetItem = e.target.closest('.skill-item');
+                        if (targetItem) {
+                            const targetIndex = parseInt(targetItem.getAttribute('data-index'));
+                            targetItem.classList.remove('drag-over');
+                            
+                            if (draggedItemIndex !== -1 && draggedItemIndex !== targetIndex) {
+                                // Reorder skills list
+                                const itemToMove = skills.splice(draggedItemIndex, 1)[0];
+                                skills.splice(targetIndex, 0, itemToMove);
+                                
+                                // Update currentIndex if needed
+                                if (currentIndex === draggedItemIndex) {
+                                    currentIndex = targetIndex;
+                                } else if (draggedItemIndex < currentIndex && targetIndex >= currentIndex) {
+                                    currentIndex--;
+                                } else if (draggedItemIndex > currentIndex && targetIndex <= currentIndex) {
+                                    currentIndex++;
+                                }
+                                
+                                renderList();
+                                renderEditor(currentIndex);
+                                
+                                // Send new order to extension
+                                const newOrder = skills.map(s => s.path);
+                                vscode.postMessage({ command: 'saveOrder', order: newOrder });
+                            }
+                        }
+                    });
+
+                    skillList.addEventListener('dragend', (e) => {
+                        const item = e.target.closest('.skill-item');
+                        if (item) {
+                            item.classList.remove('dragging');
+                        }
+                        const items = skillList.querySelectorAll('.skill-item');
+                        items.forEach(i => i.classList.remove('drag-over'));
+                        draggedItemIndex = -1;
+                    });
                 </script>
             </body>
             </html>

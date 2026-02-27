@@ -2,7 +2,16 @@
 
 All notable changes to the **Antigravity Skills Editor** will be documented in this file.
 
-## [1.0.17] - 2026-02-23 (Current)
+## [1.1.0] - 2026-02-27
+- ✨ **Drag-and-Drop Reordering**: Introduced a new feature to manually reorder skills by dragging and dropping items in the sidebar.
+- 💾 **Persistent Order**: Custom skill order is now saved and persisted across sessions.
+- ↔️ **Resizable Sidebar**: Added a resizer to the sidebar, allowing users to customize the width of the skills list.
+- 🧹 **Code Cleaning**: Removed internal metadata and prepared the package for public release.
+
+## [1.0.18] - 2026-02-27
+- 🔧 **Internal Prep**: Codebase cleanup and structural optimizations.
+
+## [1.0.17] - 2026-02-23
 - 🐛 **Critical UI Fix**: Resolved a regression where CSS source code was leaking into the UI as raw text.
 - 🏗️ **Structural Hardening**: Sanitized HTML/CSS injection in the webview to ensure consistent rendering across all environments.
 
