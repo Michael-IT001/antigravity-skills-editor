@@ -22,6 +22,8 @@ function activate(context) {
     myStatusBarItem.show();
     context.subscriptions.push(myStatusBarItem);
 
+    SkillsPanel.statusBarItem = myStatusBarItem;
+
     // Register command: open skills editor
     let disposable = vscode.commands.registerCommand('antigravity-skills-editor.openSkillsEditor', function () {
         SkillsPanel.createOrShow(context);

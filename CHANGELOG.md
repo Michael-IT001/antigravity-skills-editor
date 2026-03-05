@@ -2,6 +2,9 @@
 
 All notable changes to the **Ultra Skills Editor** will be documented in this file.
 
+## [1.8.3] - 2026-03-06
+- 🐛 **Bug Fix**: Fixed a visual issue where the VS Code/Cursor status bar item text wouldn't instantly update when switching languages inside the extension UI.
+
 ## [1.8.2] - 2026-03-05
 - 🎉 **Rebranded to Ultra Skills Editor**: Renamed to better reflect its universal support for both Antigravity and Cursor IDEs!
 - 🚀 **Dual IDE Support**: Intelligent environment detection natively routes to `~/.cursor/skills` (Cursor) or `~/.antigravity/skills` (Antigravity).

@@ -125,6 +125,12 @@ class SkillsPanel {
         this._lang = lang;
         this._i18n = translations[lang];
         this._context.globalState.update('ultraSkillsLang', lang);
+
+        if (SkillsPanel.statusBarItem) {
+            SkillsPanel.statusBarItem.text = `$(tools) ${this._i18n.title}`;
+            SkillsPanel.statusBarItem.tooltip = this._i18n.create;
+        }
+
         // Rebuild the whole webview with new language
         this._update();
     }
