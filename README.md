@@ -1,6 +1,6 @@
-# 🧠 Antigravity Skills Editor
+# 🧠 Ultra Skills Editor
 
-> A beautifully crafted, multi-language skills management extension for Antigravity & VS Code compatible editors.  
+> A beautifully crafted, multi-language skills management extension for Antigravity & Cursor.  
 > Create, edit, import, and organize your AI skills — all from a single, elegant panel.
 
 ---
@@ -52,8 +52,8 @@ The extension **automatically detects** your editor's display language on first 
 ### Installation
 
 #### Manual Installation
-1. Download the latest `.vsix` from the [Releases](https://github.com/Michael-IT001/antigravity-skills-editor/releases) page.
-2. In Antigravity/VS Code, open the Extensions panel.
+1. Download the latest `.vsix` from the [Releases](https://github.com/Michael-IT001/ultra-skills-editor/releases) page.
+2. In Antigravity/Cursor, open the Extensions panel.
 3. Click the "..." menu and select **"Install from VSIX..."**.
 4. Select the downloaded file and reload the window.
 
@@ -124,7 +124,7 @@ At the bottom of the sidebar, you'll find a 🌐 globe icon next to a dropdown m
 ### Project Structure
 
 ```
-antigravity-skills-editor/
+ultra-skills-editor/
 ├── package.json          # Extension manifest
 ├── README.md             # This file
 ├── CHANGELOG.md          # Version history
@@ -136,7 +136,7 @@ antigravity-skills-editor/
 ```
 
 ### Running Locally
-1. Open this folder in VS Code or Antigravity.
+1. Open this folder in Cursor or Antigravity.
 2. Press `F5` to launch the Extension Development Host.
 3. In the new window, click the **Skills** button in the status bar.
 
@@ -173,7 +173,7 @@ Contributions are welcome! Here are some ways you can help:
 - 📝 Full skill CRUD (Create, Read, Update, Delete)
 - 📦 Import skills from files and folders
 - 🌍 16 language support with auto-detection
-- 🎨 Native VS Code / Antigravity theme integration
+- 🎨 Native Cursor / Antigravity theme integration
 - 💾 Ctrl/Cmd+S quick save support
 - 🔒 Confirmation dialogs for destructive actions
 
@@ -181,7 +181,7 @@ Contributions are welcome! Here are some ways you can help:
 
 ## 📄 License
 
-This project is licensed under the [MIT License](https://github.com/Michael-IT001/antigravity-skills-editor/blob/HEAD/LICENSE).
+This project is licensed under the [MIT License](https://github.com/Michael-IT001/ultra-skills-editor/blob/HEAD/LICENSE).
 
 ---
 

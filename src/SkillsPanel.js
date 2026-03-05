@@ -56,8 +56,14 @@ class SkillsPanel {
                     case 'deleteSkill':
                         this._deleteSkill(message.skillPath);
                         return;
+                    case 'renameSkill':
+                        this._renameSkill(message.skillPath, message.newName);
+                        return;
                     case 'importSkills':
                         this._importSkills();
+                        return;
+                    case 'dropFilesContent':
+                        this._handleDroppedContent(message);
                         return;
                     case 'createSkill':
                         this._createSkill(message.skillName, message.isGlobal);
@@ -79,7 +85,7 @@ class SkillsPanel {
     }
 
     _resolveLang() {
-        let lang = this._context.globalState.get('antigravitySkillsLang');
+        let lang = this._context.globalState.get('ultraSkillsLang');
         if (lang && translations[lang]) return lang;
         // Auto-detect from VS Code locale
         const vsLang = (vscode.env.language || 'en').toLowerCase();
@@ -92,11 +98,33 @@ class SkillsPanel {
         return 'en';
     }
 
+    _isCursorIDE() {
+        const appName = (vscode.env.appName || '').toLowerCase();
+        // If explicitly Antigravity, it's not Cursor
+        if (appName.includes('antigravity')) return false;
+        // If explicitly Cursor, it's Cursor
+        if (appName.includes('cursor')) return true;
+
+        const appRoot = (vscode.env.appRoot || '').toLowerCase();
+        if (appRoot.includes('antigravity')) return false;
+        if (appRoot.includes('cursor')) return true;
+
+        try {
+            const execPath = (process.execPath || '').toLowerCase();
+            if (execPath.includes('antigravity')) return false;
+            if (execPath.includes('cursor')) return true;
+        } catch (e) { /* ignore */ }
+
+        // Do NOT use ~/.cursor existence as a fallback — that would break Antigravity
+        // if the user also has Cursor installed.
+        return false;
+    }
+
     _changeLang(lang) {
         if (!translations[lang]) return;
         this._lang = lang;
         this._i18n = translations[lang];
-        this._context.globalState.update('antigravitySkillsLang', lang);
+        this._context.globalState.update('ultraSkillsLang', lang);
         // Rebuild the whole webview with new language
         this._update();
     }
@@ -118,23 +146,38 @@ class SkillsPanel {
 
     _getSkillDirectories() {
         const dirs = [];
-        // Global skills
-        dirs.push({
-            path: path.join(os.homedir(), '.antigravity', 'skills'),
-            type: 'Global'
-        });
-        // Project skills
+        const isCursor = this._isCursorIDE();
+
+        // Global skills - strictly based on current IDE
+        const globalIdeName = isCursor ? '.cursor' : '.antigravity';
+        const mainGlobalPath = path.join(os.homedir(), globalIdeName, 'skills');
+        dirs.push({ path: mainGlobalPath, type: 'Global' });
+
+        // Project skills - strictly based on current IDE
         const wsPath = this._getWorkspacePath();
         if (wsPath) {
-            const projectDirs = ['.agent/skills', '.agents/workflows', '.cursor/skills', '.agents'];
-            let found = null;
-            for (const dir of projectDirs) {
-                const fullPath = path.join(wsPath, dir);
-                if (fs.existsSync(fullPath)) { found = fullPath; break; }
-            }
-            dirs.push({ path: found || path.join(wsPath, '.agent/skills'), type: 'Project' });
+            const projectDir = isCursor ? '.cursor/skills' : '.agent/skills';
+            dirs.push({ path: path.join(wsPath, projectDir), type: 'Project' });
         }
         return dirs;
+    }
+
+    _getEditorPaths() {
+        const isCursor = this._isCursorIDE();
+        return {
+            global: isCursor
+                ? path.join(os.homedir(), '.cursor', 'skills')
+                : path.join(os.homedir(), '.antigravity', 'skills'),
+            projectDefault: isCursor ? '.cursor/skills' : '.agent/skills'
+        };
+    }
+
+    _getProjectSkillDir(wsPath) {
+        if (!wsPath) return null;
+        const isCursor = this._isCursorIDE();
+        // Strictly use the current IDE's project directory only
+        const projectDir = isCursor ? '.cursor/skills' : '.agent/skills';
+        return path.join(wsPath, projectDir);
     }
 
     async _update() {
@@ -163,7 +206,7 @@ class SkillsPanel {
                 console.error('Failed to read skills directory:', e);
             }
         }
-        const savedOrder = this._context.globalState.get('antigravitySkillsOrder', []);
+        const savedOrder = this._context.globalState.get('ultraSkillsOrder', []);
         if (savedOrder && savedOrder.length > 0) {
             skills.sort((a, b) => {
                 const idxA = savedOrder.indexOf(a.path);
@@ -180,7 +223,7 @@ class SkillsPanel {
     }
 
     _saveOrder(order) {
-        this._context.globalState.update('antigravitySkillsOrder', order);
+        this._context.globalState.update('ultraSkillsOrder', order);
     }
 
     _saveSkill(skillPath, content) {
@@ -204,6 +247,24 @@ class SkillsPanel {
         }
     }
 
+    _renameSkill(skillPath, newName) {
+        if (!skillPath || !newName) return;
+        const t = this._i18n;
+        try {
+            const oldDir = path.dirname(skillPath);
+            const parentDir = path.dirname(oldDir);
+            const newDir = path.join(parentDir, newName);
+            if (fs.existsSync(newDir)) {
+                vscode.window.showErrorMessage(t.renameFailed + ' A skill with that name already exists.');
+                return;
+            }
+            fs.renameSync(oldDir, newDir);
+            this._panel.webview.postMessage({ command: 'loadSkills', skills: this._getSkills() });
+        } catch (err) {
+            vscode.window.showErrorMessage(t.renameFailed + ' ' + err.message);
+        }
+    }
+
     async _importSkills() {
         const t = this._i18n;
         const uris = await vscode.window.showOpenDialog({
@@ -220,12 +281,13 @@ class SkillsPanel {
         if (!target) return;
 
         let targetDir = null;
+        const paths = this._getEditorPaths();
         if (target.target === 'global') {
-            targetDir = path.join(os.homedir(), '.antigravity', 'skills');
+            targetDir = paths.global;
         } else {
             const wsPath = this._getWorkspacePath();
             if (!wsPath) { vscode.window.showErrorMessage(t.wsError); return; }
-            targetDir = path.join(wsPath, '.agent/skills');
+            targetDir = this._getProjectSkillDir(wsPath);
         }
 
         try {
@@ -256,16 +318,51 @@ class SkillsPanel {
         }
     }
 
+    async _handleDroppedContent(message) {
+        const files = message.files;
+        const skillName = message.skillName;
+        const isGlobal = message.isGlobal;
+        if (!files || files.length === 0 || !skillName) return;
+        const t = this._i18n;
+
+        let targetDir = null;
+        const paths = this._getEditorPaths();
+        if (isGlobal) {
+            targetDir = paths.global;
+        } else {
+            const wsPath = this._getWorkspacePath();
+            if (!wsPath) { vscode.window.showErrorMessage(t.wsError); return; }
+            targetDir = this._getProjectSkillDir(wsPath);
+        }
+
+        try {
+            if (!fs.existsSync(targetDir)) fs.mkdirSync(targetDir, { recursive: true });
+            let count = 0;
+            for (const fileObj of files) {
+                const useName = files.length === 1 ? skillName : (skillName + '_' + count);
+                const destDir = path.join(targetDir, useName);
+                if (!fs.existsSync(destDir)) fs.mkdirSync(destDir, { recursive: true });
+                fs.writeFileSync(path.join(destDir, 'SKILL.md'), fileObj.content, 'utf8');
+                count++;
+            }
+            vscode.window.showInformationMessage(t.importSuccess + ` (${count})`);
+            this._panel.webview.postMessage({ command: 'loadSkills', skills: this._getSkills() });
+        } catch (err) {
+            vscode.window.showErrorMessage(t.importFailed + ' ' + err.message);
+        }
+    }
+
     _createSkill(skillName, isGlobal = true) {
         if (!skillName) return;
         const t = this._i18n;
         let targetDir = null;
+        const paths = this._getEditorPaths();
         if (isGlobal) {
-            targetDir = path.join(os.homedir(), '.antigravity', 'skills');
+            targetDir = paths.global;
         } else {
             const wsPath = this._getWorkspacePath();
             if (!wsPath) { vscode.window.showErrorMessage(t.wsError); return; }
-            targetDir = path.join(wsPath, '.agent/skills');
+            targetDir = this._getProjectSkillDir(wsPath);
         }
         try {
             if (!fs.existsSync(targetDir)) fs.mkdirSync(targetDir, { recursive: true });
@@ -739,6 +836,13 @@ class SkillsPanel {
                         height: 16px;
                         fill: currentColor;
                     }
+                    .file-drop-active::before { content: ''; position: fixed; inset: 0; background: rgba(0, 120, 212, 0.1); border: 2px dashed var(--vscode-focusBorder); z-index: 10000; pointer-events: none; border-radius: 8px; }
+                    .context-menu { position: fixed; z-index: 99999; background: var(--vscode-menu-background, var(--vscode-dropdown-background)); border: 1px solid var(--vscode-menu-border, var(--vscode-dropdown-border)); border-radius: 6px; padding: 4px 0; min-width: 160px; box-shadow: 0 4px 16px rgba(0,0,0,0.3); display: none; }
+                    .context-menu.active { display: block; }
+                    .context-menu-item { display: flex; align-items: center; gap: 8px; padding: 6px 14px; font-size: 12px; color: var(--vscode-menu-foreground, var(--vscode-foreground)); cursor: pointer; user-select: none; }
+                    .context-menu-item:hover { background: var(--vscode-menu-selectionBackground, var(--vscode-list-hoverBackground)); color: var(--vscode-menu-selectionForeground, var(--vscode-foreground)); }
+                    .context-menu-item .icon { width: 14px; height: 14px; flex-shrink: 0; }
+                    .context-menu-item.destructive:hover { background: var(--vscode-errorForeground); color: #fff; }
                 </style>
             </head>
             <body>
@@ -814,6 +918,48 @@ class SkillsPanel {
                     </div>
                 </div>
 
+                <div class="modal-overlay" id="importModal">
+                    <div class="modal">
+                        <h3>${t.importBtn}</h3>
+                        <input type="text" id="importSkillInput" placeholder="${t.placeholder}" autocomplete="off">
+                        <div style="display:flex; gap:16px; margin-top:-4px;">
+                            <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:var(--vscode-foreground); cursor:pointer;">
+                                <input type="radio" name="importSkillType" value="global" checked> ${t.importGlobal}
+                            </label>
+                            <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:var(--vscode-foreground); cursor:pointer;">
+                                <input type="radio" name="importSkillType" value="project"> ${t.importProject}
+                            </label>
+                        </div>
+                        <div class="modal-actions">
+                            <button class="modal-btn secondary" id="cancelImportBtn">${t.cancel}</button>
+                            <button class="modal-btn primary" id="confirmImportBtn">${t.importBtn}</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-overlay" id="renameModal">
+                    <div class="modal">
+                        <h3>${t.renameTitle}</h3>
+                        <div style="font-size: 13px; color: var(--vscode-descriptionForeground); margin-bottom: 8px;">${t.renameMsg}</div>
+                        <input type="text" id="renameSkillInput" placeholder="${t.renamePlaceholder}" autocomplete="off">
+                        <div class="modal-actions">
+                            <button class="modal-btn secondary" id="cancelRenameBtn">${t.cancel}</button>
+                            <button class="modal-btn primary" id="confirmRenameBtn">${t.renameBtn}</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="context-menu" id="ctxMenu">
+                    <div class="context-menu-item" id="ctxRename">
+                        <svg class="icon" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M13.23 1h-1.46L3.52 9.25l-.16.22L1 13.59 2.41 15l4.12-2.36.22-.16L15 4.23V2.77L13.23 1zM2.41 13.59l1.51-3 1.45 1.45-2.96 1.55zm3.83-2.06L4.47 9.76l8-8 1.77 1.77-8 8z"/></svg>
+                        <span>${t.renameBtn}</span>
+                    </div>
+                    <div class="context-menu-item destructive" id="ctxDelete">
+                        <svg class="icon" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M14 3h-3V1H5v2H2v1h1v11h10V4h1V3zM6 2h4v1H6V2zm6 12H4V4h8v10z"/><path d="M6 6h1v6H6zm3 0h1v6H9z"/></svg>
+                        <span>${t.deleteConfirmTitle}</span>
+                    </div>
+                </div>
+
                 <script>
                     const vscode = acquireVsCodeApi();
                     const t = ${tJson};
@@ -878,7 +1024,12 @@ class SkillsPanel {
                                 + '</svg>'
                                 + '</div>';
 
-                            var badge = (skill.type === 'Global') ? '<span style="font-size:9px;padding:2px 4px;border-radius:3px;background:rgba(128,128,128,0.2);margin-left:auto;">' + t.globalBadge + '</span>' : '';
+                            var badge = '';
+                            if (skill.type === 'Global') {
+                                badge = '<span style="font-size:9px;padding:2px 4px;border-radius:3px;background:rgba(128,128,128,0.2);margin-left:auto;">' + t.globalBadge + '</span>';
+                            } else if (skill.type === 'Project') {
+                                badge = '<span style="font-size:9px;padding:2px 4px;border-radius:3px;background:rgba(80,140,200,0.2);color:var(--vscode-textLink-foreground);margin-left:auto;">' + (t.projectBadge || 'Project') + '</span>';
+                            }
                             
                             html += '<div class="skill-item' + activeClass + selectedClass + '" data-index="' + i + '" draggable="true">'
                                 + iconHtml
@@ -1109,6 +1260,82 @@ class SkillsPanel {
                         });
                     });
 
+                    // === Right-click Context Menu ===
+                    const ctxMenu = document.getElementById('ctxMenu');
+                    const ctxRename = document.getElementById('ctxRename');
+                    const ctxDelete = document.getElementById('ctxDelete');
+                    let ctxSkillIndex = -1;
+
+                    function hideCtxMenu() {
+                        ctxMenu.classList.remove('active');
+                    }
+
+                    skillList.addEventListener('contextmenu', (e) => {
+                        e.preventDefault();
+                        const target = e.target.closest('.skill-item');
+                        if (!target) return;
+                        ctxSkillIndex = parseInt(target.getAttribute('data-index'));
+                        ctxMenu.style.left = e.clientX + 'px';
+                        ctxMenu.style.top = e.clientY + 'px';
+                        ctxMenu.classList.add('active');
+                    });
+
+                    document.addEventListener('click', hideCtxMenu);
+                    document.addEventListener('contextmenu', (e) => {
+                        if (!e.target.closest('.skill-item') && !e.target.closest('.context-menu')) {
+                            hideCtxMenu();
+                        }
+                    });
+
+                    ctxRename.addEventListener('click', () => {
+                        hideCtxMenu();
+                        const skill = skills[ctxSkillIndex];
+                        if (!skill) return;
+                        renameSkillInput.value = skill.name;
+                        pendingRenameSkillPath = skill.path;
+                        renameModal.classList.add('active');
+                        setTimeout(() => { renameSkillInput.focus(); renameSkillInput.select(); }, 100);
+                    });
+
+                    ctxDelete.addEventListener('click', () => {
+                        hideCtxMenu();
+                        const skill = skills[ctxSkillIndex];
+                        if (!skill) return;
+                        showConfirm(t.deleteConfirmTitle, t.deleteMsg, () => {
+                            vscode.postMessage({ command: 'deleteSkill', skillPath: skill.path });
+                        }, true);
+                    });
+
+                    // === Rename Modal ===
+                    const renameModal = document.getElementById('renameModal');
+                    const renameSkillInput = document.getElementById('renameSkillInput');
+                    const cancelRenameBtn = document.getElementById('cancelRenameBtn');
+                    const confirmRenameBtn = document.getElementById('confirmRenameBtn');
+                    let pendingRenameSkillPath = null;
+
+                    function closeRenameModal() {
+                        renameModal.classList.remove('active');
+                        pendingRenameSkillPath = null;
+                    }
+
+                    cancelRenameBtn.addEventListener('click', closeRenameModal);
+                    renameModal.addEventListener('click', (e) => {
+                        if (e.target === renameModal) closeRenameModal();
+                    });
+
+                    confirmRenameBtn.addEventListener('click', () => {
+                        if (!pendingRenameSkillPath) return;
+                        const newName = renameSkillInput.value.trim();
+                        if (!newName) { renameSkillInput.focus(); return; }
+                        vscode.postMessage({ command: 'renameSkill', skillPath: pendingRenameSkillPath, newName: newName });
+                        closeRenameModal();
+                    });
+
+                    renameSkillInput.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter') { e.preventDefault(); confirmRenameBtn.click(); }
+                        if (e.key === 'Escape') closeRenameModal();
+                    });
+
                     // Request skills on load
                     vscode.postMessage({ command: 'requestSkills' });
 
@@ -1211,11 +1438,180 @@ class SkillsPanel {
                         items.forEach(i => i.classList.remove('drag-over'));
                         draggedItemIndex = -1;
                     });
+                    // === Import Modal Logic ===
+                    const importModal = document.getElementById('importModal');
+                    const importSkillInput = document.getElementById('importSkillInput');
+                    const cancelImportBtn = document.getElementById('cancelImportBtn');
+                    const confirmImportBtn = document.getElementById('confirmImportBtn');
+                    let pendingImportFiles = null;
+
+                    function showImportModal(files) {
+                        pendingImportFiles = files;
+                        // Auto-fill skill name from first file
+                        let defaultName = files[0].name.replace(/\.(md|mdc)$/i, '');
+                        if (['SKILL', 'README', 'skill', 'readme'].includes(defaultName)) {
+                            defaultName = '';
+                        }
+                        importSkillInput.value = defaultName;
+                        importModal.classList.add('active');
+                        importSkillInput.focus();
+                        importSkillInput.select();
+                    }
+
+                    cancelImportBtn.addEventListener('click', () => {
+                        importModal.classList.remove('active');
+                        pendingImportFiles = null;
+                    });
+
+                    importModal.addEventListener('click', (e) => {
+                        if (e.target === importModal) {
+                            importModal.classList.remove('active');
+                            pendingImportFiles = null;
+                        }
+                    });
+
+                    confirmImportBtn.addEventListener('click', () => {
+                        if (!pendingImportFiles) return;
+                        const skillName = importSkillInput.value.trim();
+                        if (!skillName) { importSkillInput.focus(); return; }
+                        const isGlobal = document.querySelector('input[name="importSkillType"]:checked').value === 'global';
+                        importModal.classList.remove('active');
+                        vscode.postMessage({
+                            command: 'dropFilesContent',
+                            files: pendingImportFiles,
+                            skillName: skillName,
+                            isGlobal: isGlobal
+                        });
+                        pendingImportFiles = null;
+                    });
+
+                    importSkillInput.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter') confirmImportBtn.click();
+                        if (e.key === 'Escape') cancelImportBtn.click();
+                    });
+
+                    // === External File Drag-and-Drop Import ===
+                    // Must be registered early so our handlers fire BEFORE Cursor's outer pre-load handlers
+                    (function() {
+                        let isDraggingExternal = false;
+
+                        document.addEventListener('dragenter', function(e) {
+                            if (e.dataTransfer && e.dataTransfer.types.indexOf('Files') !== -1) {
+                                isDraggingExternal = true;
+                                e.preventDefault();
+                                e.stopImmediatePropagation();
+                                document.body.classList.add('file-drop-active');
+                            }
+                        }, true);
+
+                        document.addEventListener('dragover', function(e) {
+                            if (isDraggingExternal || (e.dataTransfer && e.dataTransfer.types.indexOf('Files') !== -1)) {
+                                isDraggingExternal = true;
+                                e.preventDefault();
+                                e.stopImmediatePropagation();
+                                e.dataTransfer.dropEffect = 'copy';
+                            }
+                        }, true);
+
+                        document.addEventListener('dragleave', function(e) {
+                            if (isDraggingExternal && (e.clientX <= 0 || e.clientY <= 0 || e.clientX >= window.innerWidth || e.clientY >= window.innerHeight)) {
+                                isDraggingExternal = false;
+                                document.body.classList.remove('file-drop-active');
+                            }
+                        }, true);
+
+                        document.addEventListener('drop', function(e) {
+                            if (!isDraggingExternal) return;
+                            e.preventDefault();
+                            e.stopImmediatePropagation();
+                            isDraggingExternal = false;
+                            document.body.classList.remove('file-drop-active');
+
+                            if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                                var fileContents = [];
+                                var pending = 0;
+                                for (var i = 0; i < e.dataTransfer.files.length; i++) {
+                                    var file = e.dataTransfer.files[i];
+                                    if (file.name.endsWith('.md') || file.name.endsWith('.mdc')) {
+                                        pending++;
+                                        (function(f) {
+                                            var reader = new FileReader();
+                                            reader.onload = function(ev) {
+                                                fileContents.push({ name: f.name, content: ev.target.result });
+                                                pending--;
+                                                if (pending === 0 && fileContents.length > 0) {
+                                                    showImportModal(fileContents);
+                                                }
+                                            };
+                                            reader.onerror = function() { pending--; };
+                                            reader.readAsText(f);
+                                        })(file);
+                                    }
+                                }
+                            }
+                        }, true);
+                    })();
                 </script>
             </body>
             </html>
         `;
     }
 }
+
+/**
+ * Static method: import files from explorer right-click context menu.
+ * Called by extension.js when user right-clicks .md files/folders.
+ * @param {string[]} filePaths - Array of absolute file paths
+ */
+SkillsPanel.importFromExplorer = function (filePaths) {
+    if (!SkillsPanel.currentPanel) return;
+    const panel = SkillsPanel.currentPanel;
+    const t = panel._i18n;
+
+    (async () => {
+        const target = await vscode.window.showQuickPick([
+            { label: '$(globe) ' + t.importGlobal, target: 'global' },
+            { label: '$(folder) ' + t.importProject, target: 'project' }
+        ], { placeHolder: t.importPickerTitle });
+        if (!target) return;
+
+        let targetDir = null;
+        const paths = panel._getEditorPaths();
+        if (target.target === 'global') {
+            targetDir = paths.global;
+        } else {
+            const wsPath = panel._getWorkspacePath();
+            if (!wsPath) { vscode.window.showErrorMessage(t.wsError); return; }
+            targetDir = panel._getProjectSkillDir(wsPath);
+        }
+
+        try {
+            if (!fs.existsSync(targetDir)) fs.mkdirSync(targetDir, { recursive: true });
+            let count = 0;
+            for (const filePath of filePaths) {
+                const stat = fs.statSync(filePath);
+                if (stat.isDirectory()) {
+                    const dest = path.join(targetDir, path.basename(filePath));
+                    if (fs.cpSync) fs.cpSync(filePath, dest, { recursive: true });
+                    count++;
+                } else if (filePath.endsWith('.md') || filePath.endsWith('.mdc')) {
+                    let skillName = path.basename(filePath, path.extname(filePath));
+                    if (['SKILL', 'README'].includes(skillName.toUpperCase())) {
+                        skillName = path.basename(path.dirname(filePath));
+                    }
+                    if (!skillName) skillName = 'Skill_' + Date.now();
+                    const destDir = path.join(targetDir, skillName);
+                    if (!fs.existsSync(destDir)) fs.mkdirSync(destDir, { recursive: true });
+                    fs.copyFileSync(filePath, path.join(destDir, 'SKILL.md'));
+                    count++;
+                }
+            }
+            vscode.window.showInformationMessage(t.importSuccess + ` (${count})`);
+            panel._panel.webview.postMessage({ command: 'loadSkills', skills: panel._getSkills() });
+        } catch (err) {
+            vscode.window.showErrorMessage(t.importFailed + ' ' + err.message);
+        }
+    })();
+};
 
 module.exports = SkillsPanel;

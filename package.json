@@ -1,9 +1,9 @@
 {
 	"name": "antigravity-skills-editor",
-	"displayName": "Antigravity Skills Editor",
-	"description": "A powerful, multi-language skills management plugin for Antigravity. Create, edit, import, and delete your AI skills with ease.",
+	"displayName": "Ultra Skills Editor",
+	"description": "A powerful, multi-language skills management plugin for AI Agents. Create, edit, import, and delete your AI skills with ease.",
 	"publisher": "Michael-IT001",
-	"version": "1.1.0",
+	"version": "1.8.0",
 	"icon": "media/icon.png",
 	"engines": {
 		"vscode": "^1.60.0"
@@ -12,7 +12,7 @@
 		"Other"
 	],
 	"keywords": [
-		"antigravity",
+		"ultra",
 		"skills",
 		"ai",
 		"editor",
@@ -27,12 +27,25 @@
 			{
 				"command": "antigravity-skills-editor.openSkillsEditor",
 				"title": "Open Skills Editor"
+			},
+			{
+				"command": "antigravity-skills-editor.importSkillFromExplorer",
+				"title": "Import as Skill / 导入为技能"
 			}
-		]
+		],
+		"menus": {
+			"explorer/context": [
+				{
+					"command": "antigravity-skills-editor.importSkillFromExplorer",
+					"group": "7_modification",
+					"when": "resourceExtname == '.md' || resourceExtname == '.mdc' || explorerResourceIsFolder"
+				}
+			]
+		}
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/Michael-IT001/antigravity-skills-editor"
+		"url": "https://github.com/Michael-IT001/ultra-skills-editor"
 	},
 	"license": "MIT",
 	"galleryBanner": {

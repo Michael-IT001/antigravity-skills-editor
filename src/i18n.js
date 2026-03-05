@@ -20,6 +20,7 @@ const translations = {
         saveMsg: "Are you sure you want to save modifications to this skill?",
         saving: "Saving...",
         globalBadge: "Global",
+        projectBadge: "Project",
         placeholder: "Skill name (e.g., Code Reviewer)",
         saveBtn: "Save Changes",
         wsError: "No workspace folder open to save project skills.",
@@ -30,7 +31,12 @@ const translations = {
         copySuccess: "Copied! ({0} skill{1} in clipboard)",
         deselected: "Skill deselected.",
         clearCart: "Clear Selection",
-        copyToChat: "Copy to Chat"
+        copyToChat: "Copy to Chat",
+        renameTitle: "Rename Skill",
+        renameMsg: "Enter the new name for this skill:",
+        renamePlaceholder: "New skill name",
+        renameFailed: "Failed to rename skill:",
+        renameBtn: "Rename"
     },
     'zh-cn': {
         name: "🇨🇳 简体中文",
@@ -53,6 +59,7 @@ const translations = {
         saveMsg: "您确定要将修改保存到此技能吗？",
         saving: "保存中...",
         globalBadge: "全局",
+        projectBadge: "项目",
         placeholder: "技能名称 (例如：代码审查专家)",
         saveBtn: "保存当前修改",
         wsError: "未打开任何工作区，无法进行项目级保存。",
@@ -63,7 +70,12 @@ const translations = {
         copySuccess: "已复制！（剪贴板中共有 {0} 个技能）",
         deselected: "已取消选择。",
         clearCart: "清空全部选择",
-        copyToChat: "复制到对话"
+        copyToChat: "复制到对话",
+        renameTitle: "重命名技能",
+        renameMsg: "请输入新的技能名称：",
+        renamePlaceholder: "新技能名称",
+        renameFailed: "重命名技能失败：",
+        renameBtn: "重命名"
     },
     'zh-tw': {
         name: "🇹🇼 繁體中文",
@@ -86,6 +98,7 @@ const translations = {
         saveMsg: "您確定要將修改儲存到此技能嗎？",
         saving: "儲存中...",
         globalBadge: "全域",
+        projectBadge: "專案",
         placeholder: "技能名稱 (例如：程式碼審查專家)",
         saveBtn: "儲存目前修改",
         wsError: "未開啟任何工作區，無法進行專案級儲存。",
@@ -96,7 +109,12 @@ const translations = {
         copySuccess: "已複製！（剪貼板中共有 {0} 個技能）",
         deselected: "已取消選擇。",
         clearCart: "清空全部選擇",
-        copyToChat: "複製到對話"
+        copyToChat: "複製到對話",
+        renameTitle: "重新命名技能",
+        renameMsg: "請輸入新的技能名稱：",
+        renamePlaceholder: "新技能名稱",
+        renameFailed: "重新命名技能失敗：",
+        renameBtn: "重新命名"
     },
     'ja': {
         name: "🇯🇵 日本語",
@@ -119,6 +137,7 @@ const translations = {
         saveMsg: "変更を保存してもよろしいですか？",
         saving: "保存中...",
         globalBadge: "グローバル",
+        projectBadge: "プロジェクト",
         placeholder: "スキル名（例：コードレビューア）",
         saveBtn: "変更を保存",
         wsError: "ワークスペースが開かれていないため、プロジェクトの保存ができません。",
@@ -129,7 +148,12 @@ const translations = {
         copySuccess: "コピーしました！（クリップボードに {0} 個のスキル）",
         deselected: "選択を解除しました。",
         clearCart: "選択をすべて解除",
-        copyToChat: "チャットにコピー"
+        copyToChat: "チャットにコピー",
+        renameTitle: "スキル名を変更",
+        renameMsg: "新しいスキル名を入力してください：",
+        renamePlaceholder: "新しいスキル名",
+        renameFailed: "スキルの名前変更に失敗しました:",
+        renameBtn: "名前を変更"
     },
     'de': {
         name: "🇩🇪 Deutsch",
@@ -152,6 +176,7 @@ const translations = {
         saveMsg: "Möchten Sie die Änderungen an diesem Skill wirklich speichern?",
         saving: "Speichern...",
         globalBadge: "Global",
+        projectBadge: "Projekt",
         placeholder: "Skill-Name (z.B. Code Reviewer)",
         saveBtn: "Änderungen speichern",
         wsError: "Kein Arbeitsbereich geöffnet, um Projekt-Skills zu speichern.",
@@ -162,7 +187,12 @@ const translations = {
         copySuccess: "Kopiert! ({0} Skill{1} in der Zwischenablage)",
         deselected: "Skill deselektiert.",
         clearCart: "Auswahl aufheben",
-        copyToChat: "In Chat kopieren"
+        copyToChat: "In Chat kopieren",
+        renameTitle: "Skill umbenennen",
+        renameMsg: "Geben Sie den neuen Namen ein:",
+        renamePlaceholder: "Neuer Skill-Name",
+        renameFailed: "Fehler beim Umbenennen:",
+        renameBtn: "Umbenennen"
     },
     'es': {
         name: "🇪🇸 Español",
@@ -185,6 +215,7 @@ const translations = {
         saveMsg: "¿Estás seguro de que deseas guardar las modificaciones a esta habilidad?",
         saving: "Guardando...",
         globalBadge: "Global",
+        projectBadge: "Proyecto",
         placeholder: "Nombre (ej. Revisor de Código)",
         saveBtn: "Guardar Cambios",
         wsError: "No hay espacio de trabajo abierto para guardar habilidades de proyecto.",
@@ -195,7 +226,12 @@ const translations = {
         copySuccess: "¡Copiado! ({0} habilidad{1} en el portapapeles)",
         deselected: "Habilidad deseleccionada.",
         clearCart: "Limpiar selección",
-        copyToChat: "Copiar al chat"
+        copyToChat: "Copiar al chat",
+        renameTitle: "Renombrar Habilidad",
+        renameMsg: "Ingrese el nuevo nombre:",
+        renamePlaceholder: "Nuevo nombre",
+        renameFailed: "Error al renombrar:",
+        renameBtn: "Renombrar"
     },
     'fr': {
         name: "🇫🇷 Français",
@@ -218,6 +254,7 @@ const translations = {
         saveMsg: "Voulez-vous vraiment enregistrer les modifications apportées à cette compétence ?",
         saving: "Enregistrement...",
         globalBadge: "Global",
+        projectBadge: "Projet",
         placeholder: "Nom de la compétence (ex. Réviseur de Code)",
         saveBtn: "Enregistrer les modifications",
         wsError: "Aucun espace de travail ouvert pour enregistrer.",
@@ -228,7 +265,12 @@ const translations = {
         copySuccess: "Copié ! ({0} compétence{1} dans le presse-papiers)",
         deselected: "Compétence désélectionnée.",
         clearCart: "Effacer la sélection",
-        copyToChat: "Copier dans le chat"
+        copyToChat: "Copier dans le chat",
+        renameTitle: "Renommer",
+        renameMsg: "Entrez le nouveau nom :",
+        renamePlaceholder: "Nouveau nom",
+        renameFailed: "Échec du renommage :",
+        renameBtn: "Renommer"
     },
     'it': {
         name: "🇮🇹 Italiano",
@@ -251,6 +293,7 @@ const translations = {
         saveMsg: "Sei sicuro di voler salvare le modifiche a questa competenza?",
         saving: "Salvataggio...",
         globalBadge: "Globale",
+        projectBadge: "Progetto",
         placeholder: "Nome (es. Code Reviewer)",
         saveBtn: "Salva Modifiche",
         wsError: "Nessuna cartella di lavoro aperta.",
@@ -261,7 +304,12 @@ const translations = {
         copySuccess: "Copiato! ({0} competenza{1} negli appunti)",
         deselected: "Competenza deselezionata.",
         clearCart: "Cancella selezione",
-        copyToChat: "Copia nella chat"
+        copyToChat: "Copia nella chat",
+        renameTitle: "Rinomina",
+        renameMsg: "Inserisci il nuovo nome:",
+        renamePlaceholder: "Nuovo nome",
+        renameFailed: "Errore nel rinominare:",
+        renameBtn: "Rinomina"
     },
     'ko': {
         name: "🇰🇷 한국어",
@@ -284,6 +332,7 @@ const translations = {
         saveMsg: "이 스킬의 수정 사항을 저장하시겠습니까?",
         saving: "저장 중...",
         globalBadge: "글로벌",
+        projectBadge: "프로젝트",
         placeholder: "스킬 이름 (예: 코드 리뷰어)",
         saveBtn: "변경사항 저장",
         wsError: "작업 공간이 열려 있지 않습니다.",
@@ -294,7 +343,12 @@ const translations = {
         copySuccess: "복사됨! (클립보드에 {0}개의 스킬)",
         deselected: "스킬 선택 해제됨.",
         clearCart: "선택 모두 해제",
-        copyToChat: "대화창으로 복사"
+        copyToChat: "대화창으로 복사",
+        renameTitle: "스킬 이름 변경",
+        renameMsg: "새 이름을 입력하세요:",
+        renamePlaceholder: "새 스킬 이름",
+        renameFailed: "이름 변경 실패:",
+        renameBtn: "이름 변경"
     },
     'pt-br': {
         name: "🇧🇷 Português",
@@ -317,6 +371,7 @@ const translations = {
         saveMsg: "Certeza de que deseja salvar modificações?",
         saving: "Salvando...",
         globalBadge: "Global",
+        projectBadge: "Projeto",
         placeholder: "Nome da habilidade (ex. Code Reviewer)",
         saveBtn: "Salvar Alterações",
         wsError: "Nenhum workspace aberto.",
@@ -327,7 +382,12 @@ const translations = {
         copySuccess: "Copiado! ({0} habilidade{1} na área de transferência)",
         deselected: "Habilidade desmarcada.",
         clearCart: "Limpar Seleção",
-        copyToChat: "Copiar para o Chat"
+        copyToChat: "Copiar para o Chat",
+        renameTitle: "Renomear",
+        renameMsg: "Digite o novo nome:",
+        renamePlaceholder: "Novo nome",
+        renameFailed: "Falha ao renomear:",
+        renameBtn: "Renomear"
     },
     'ru': {
         name: "🇷🇺 Русский",
@@ -350,6 +410,7 @@ const translations = {
         saveMsg: "Вы уверены, что хотите сохранить изменения?",
         saving: "Сохранение...",
         globalBadge: "Глобальный",
+        projectBadge: "Проект",
         placeholder: "Имя (напр. Код Ревьюер)",
         saveBtn: "Сохранить",
         wsError: "Рабочая область не открыта.",
@@ -360,7 +421,12 @@ const translations = {
         copySuccess: "Скопировано! ({0} навык{1} в буфер обмена)",
         deselected: "Навык отменен.",
         clearCart: "Очистить всё",
-        copyToChat: "Копировать в чат"
+        copyToChat: "Копировать в чат",
+        renameTitle: "Переименовать",
+        renameMsg: "Введите новое имя:",
+        renamePlaceholder: "Новое имя",
+        renameFailed: "Ошибка переименования:",
+        renameBtn: "Переименовать"
     },
     'tr': {
         name: "🇹🇷 Türkçe",
@@ -383,6 +449,7 @@ const translations = {
         saveMsg: "Değişiklikleri kaydetmek istediğinize emin misiniz?",
         saving: "Kaydediliyor...",
         globalBadge: "Global",
+        projectBadge: "Proje",
         placeholder: "Yetenek adı (örn. Code Reviewer)",
         saveBtn: "Kaydet",
         wsError: "Açık bir çalışma alanı yok.",
@@ -393,7 +460,12 @@ const translations = {
         copySuccess: "Kopyalandı! (Panoda {0} yetenek)",
         deselected: "Yetenek seçimi kaldırıldı.",
         clearCart: "Seçimi Temizle",
-        copyToChat: "Sohbete Kopyala"
+        copyToChat: "Sohbete Kopyala",
+        renameTitle: "Yeniden Adlandır",
+        renameMsg: "Yeni adı girin:",
+        renamePlaceholder: "Yeni ad",
+        renameFailed: "Yeniden adlandırma başarısız:",
+        renameBtn: "Yeniden Adlandır"
     },
     'pl': {
         name: "🇵🇱 Polski",
@@ -416,6 +488,7 @@ const translations = {
         saveMsg: "Czy na pewno chcesz zapisać zmiany?",
         saving: "Zapisywanie...",
         globalBadge: "Globalne",
+        projectBadge: "Projekt",
         placeholder: "Nazwa (np. Code Reviewer)",
         saveBtn: "Zapisz",
         wsError: "Brak otwartego obszaru roboczego.",
@@ -426,7 +499,12 @@ const translations = {
         copySuccess: "Skopiowano! ({0} umiejętność{1} w schowku)",
         deselected: "Umiejętność odznaczona.",
         clearCart: "Wyczyść zaznaczenie",
-        copyToChat: "Kopiuj do czatu"
+        copyToChat: "Kopiuj do czatu",
+        renameTitle: "Zmień nazwę",
+        renameMsg: "Wpisz nową nazwę:",
+        renamePlaceholder: "Nowa nazwa",
+        renameFailed: "Błąd zmiany nazwy:",
+        renameBtn: "Zmień nazwę"
     },
     'cs': {
         name: "🇨🇿 Čeština",
@@ -449,6 +527,7 @@ const translations = {
         saveMsg: "Opravdu chcete uložit úpravy této dovednosti?",
         saving: "Ukládání...",
         globalBadge: "Globální",
+        projectBadge: "Projekt",
         placeholder: "Název (např. Code Reviewer)",
         saveBtn: "Uložit",
         wsError: "Není otevřen žádný pracovní prostor.",
@@ -459,7 +538,12 @@ const translations = {
         copySuccess: "Kopírováno! ({0} dovednost{1} v schránce)",
         deselected: "Dovednost odznačena.",
         clearCart: "Zrušit výběr",
-        copyToChat: "Kopírovat do chatu"
+        copyToChat: "Kopírovat do chatu",
+        renameTitle: "Přejmenovat",
+        renameMsg: "Zadejte nový název:",
+        renamePlaceholder: "Nový název",
+        renameFailed: "Chyba přejmenování:",
+        renameBtn: "Přejmenovat"
     },
     'ar': {
         name: "🇸🇦 العربية",
@@ -482,6 +566,7 @@ const translations = {
         saveMsg: "هل أنت متأكد من حفظ التعديلات؟",
         saving: "جاري الحفظ...",
         globalBadge: "شامل",
+        projectBadge: "مشروع",
         placeholder: "الاسم (مثل Code Reviewer)",
         saveBtn: "حفظ التغييرات",
         wsError: "لا يوجد مساحة عمل مفتوحة.",
@@ -492,7 +577,12 @@ const translations = {
         copySuccess: "تم النسخ! ({0} مهارة{1} في الحافظة)",
         deselected: "تم إلغاء تحديد المهارة.",
         clearCart: "مسح التحديد",
-        copyToChat: "نسخ إلى الدردشة"
+        copyToChat: "نسخ إلى الدردشة",
+        renameTitle: "إعادة تسمية",
+        renameMsg: "أدخل الاسم الجديد:",
+        renamePlaceholder: "الاسم الجديد",
+        renameFailed: "فشل إعادة التسمية:",
+        renameBtn: "إعادة تسمية"
     },
     'vi': {
         name: "🇻🇳 Tiếng Việt",
@@ -515,6 +605,7 @@ const translations = {
         saveMsg: "Bạn có chắc chắn muốn lưu sửa đổi?",
         saving: "Đang lưu...",
         globalBadge: "Toàn cầu",
+        projectBadge: "Dự án",
         placeholder: "Tên kỹ năng (VD: Code Reviewer)",
         saveBtn: "Lưu Thay Đổi",
         wsError: "Không mở không gian làm việc nào.",
@@ -525,7 +616,12 @@ const translations = {
         copySuccess: "Đã sao chép! ({0} kỹ năng trong bộ nhớ tạm)",
         deselected: "Đã bỏ chọn kỹ năng.",
         clearCart: "Xoá tất cả lựa chọn",
-        copyToChat: "Sao chép vào hội thoại"
+        copyToChat: "Sao chép vào hội thoại",
+        renameTitle: "Đổi tên",
+        renameMsg: "Nhập tên mới:",
+        renamePlaceholder: "Tên mới",
+        renameFailed: "Lỗi khi đổi tên:",
+        renameBtn: "Đổi tên"
     }
 };
 
