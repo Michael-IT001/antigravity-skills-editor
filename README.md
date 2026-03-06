@@ -23,7 +23,7 @@ There are **3 easy ways** to launch the Ultra Skills Editor:
 | 🌍 **16 Languages** | Auto-detects your editor language, or switch manually with one click. |
 | 📝 **Full Editor** | Built-in markdown editor with syntax-friendly monospace font. |
 | 🗂️ **Global + Project** | Skills can be scoped globally (available everywhere) or per-project. |
-| 📦 **Import** | Drag in `.md` files or entire skill folders from anywhere on your system. |
+| 📦 **Import** | **Shift + Drag** `.md` files or folders directly into the editor for instant import. |
 | 🗑️ **Safe Delete** | Confirmation dialogs prevent accidental data loss. |
 | 💾 **Quick Save** | Press `Ctrl/Cmd + S` inside the editor to save instantly. |
 
@@ -108,11 +108,13 @@ Click any skill in the sidebar to open it in the editor. The content is displaye
 - **Clipboard Sync**: Your selection is automatically synced to the system clipboard as a list of Markdown links. Simply press `Cmd/Ctrl + V` in your chat to use them!
 
 ### Importing Skills
-Click the **Import** button (archive icon) in the sidebar header. You can select:
-- **Individual `.md` files** — they will be automatically wrapped into a proper skill folder with `SKILL.md`
-- **Entire folders** — they will be copied as-is into your skills directory
+There are two ways to import skills:
 
-After selecting files, you'll be prompted to choose the destination (Global or Project).
+1. **Toolbar Button**: Click the **Import** button (archive icon) in the sidebar header. You can select individual `.md` files or entire folders. After selection, choose your destination (Global or Project).
+2. **Shift + Drag-and-Drop**: Hold the **Shift** key while dragging `.md` files or skill folders from your system's File Explorer (or Finder) directly onto the Skills Editor panel. A modal will pop up to confirm the import name and destination.
+
+> [!TIP]
+> Holding **Shift** is required in Cursor/Antigravity to ensure the file is dropped into the plugin editor rather than opening as a regular tab!
 
 ### Deleting Skills
 Click the **red trash icon** in the editor toolbar. A confirmation dialog will appear to prevent accidental deletion. This action permanently removes the skill folder and its contents.

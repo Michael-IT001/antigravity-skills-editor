@@ -966,6 +966,7 @@ class SkillsPanel {
                     </div>
                 </div>
 
+
                 <script>
                     const vscode = acquireVsCodeApi();
                     const t = ${tJson};
