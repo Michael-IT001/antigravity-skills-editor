@@ -1,0 +1,69 @@
+{
+	"name": "antigravity-skills-editor",
+	"displayName": "Ultra Skills Editor",
+	"description": "A powerful, multi-language skills management plugin for AI Agents. Create, edit, search, preview, import, export, and organize your AI skills with ease.",
+	"publisher": "Michael-IT001",
+	"version": "2.0.0",
+	"icon": "media/icon.png",
+	"engines": {
+		"vscode": "^1.60.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"keywords": [
+		"ultra",
+		"skills",
+		"ai",
+		"editor",
+		"multi-language",
+		"markdown",
+		"preview",
+		"template"
+	],
+	"activationEvents": [
+		"*"
+	],
+	"main": "./src/extension.js",
+	"contributes": {
+		"commands": [
+			{
+				"command": "antigravity-skills-editor.openSkillsEditor",
+				"title": "Open Skills Editor"
+			},
+			{
+				"command": "antigravity-skills-editor.importSkillFromExplorer",
+				"title": "Import as Skill / 导入为技能"
+			},
+			{
+				"command": "antigravity-skills-editor.exportSkill",
+				"title": "Export Current Skill"
+			}
+		],
+		"menus": {
+			"explorer/context": [
+				{
+					"command": "antigravity-skills-editor.importSkillFromExplorer",
+					"group": "7_modification",
+					"when": "resourceExtname == '.md' || resourceExtname == '.mdc' || explorerResourceIsFolder"
+				}
+			]
+		},
+		"keybindings": [
+			{
+				"command": "antigravity-skills-editor.openSkillsEditor",
+				"key": "ctrl+shift+k",
+				"mac": "cmd+shift+k"
+			}
+		]
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Michael-IT001/ultra-skills-editor"
+	},
+	"license": "MIT",
+	"galleryBanner": {
+		"color": "#1E1E2E",
+		"theme": "dark"
+	}
+}
