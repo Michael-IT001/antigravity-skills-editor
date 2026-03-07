@@ -25,7 +25,7 @@
 | ⌨️ **Keyboard Shortcuts** | `Cmd+F` search, `Cmd+N` new, `↑↓` navigate, `Tab` indent |
 | 📤 **Export** | Export individual skills as `.md` files via toolbar button |
 | 🎨 **Visual Polish** | Added description previews and total skills count in sidebar |
-| 🚀 **Universal IDE Support** | Native workspace path resolution for VSCode, Cursor, Trae, Antigravity, Qoder, Windsurf, and CodeBuddy |
+| 🚀 **Universal IDE Support** | Native workspace path resolution for VSCode, Cursor, Trae, Trae CN, Antigravity, Qoder, Windsurf, and CodeBuddy |
 
 ---
 
@@ -82,11 +82,13 @@
 ```
 ~/.cursor/skills/               ← Global skills (Cursor)
 ~/.trae/skills/                 ← Global skills (Trae)
+~/.trae-cn/skills/              ← Global skills (Trae CN)
 ~/.vscode/skills/               ← Global skills (VSCode)
 ... (etc for qoder, windsurf, codebuddy, antigravity)
 
 <project>/.cursor/skills/       ← Project skills (Cursor)
 <project>/.trae/skills/         ← Project skills (Trae)
+<project>/.trae-cn/skills/      ← Project skills (Trae CN)
 <project>/.vscode/skills/       ← Project skills (VSCode)
 <project>/.agent/skills/        ← Project skills (Antigravity)
 ...
