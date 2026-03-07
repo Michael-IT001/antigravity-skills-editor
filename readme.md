@@ -21,13 +21,10 @@
 | Feature | Description |
 |---------|-------------|
 | 🔍 **Search & Filter** | Real-time fuzzy search with type filter tabs (All / Global / Project) |
-| 📝 **Markdown Preview** | Toggle Edit/Preview with full rendering (headings, code, lists, checkboxes) |
-| 📋 **6 Skill Templates** | Code Reviewer, Test Writer, API Designer, Doc Writer, Debugger, or Blank |
-| 📤 **Export** | Export individual skills as `.md` files |
-| 📊 **Statistics Bar** | Word count, line count, last modified time |
+| 🖱️ **Context Menu** | Right-click any skill in the sidebar to quickly Rename or Delete it |
 | ⌨️ **Keyboard Shortcuts** | `Cmd+F` search, `Cmd+N` new, `↑↓` navigate, `Tab` indent |
-| 🔄 **Duplicate** | Right-click → Duplicate any skill instantly |
-| 🎨 **Visual Polish** | Description previews, unsaved indicators, smooth animations |
+| 📤 **Export** | Export individual skills as `.md` files via toolbar button |
+| 🎨 **Visual Polish** | Added description previews and total skills count in sidebar |
 | 🚀 **Ultimate IDE Support** | Native, transparent workspace support for Trae, Cursor, and Antigravity |
 
 ---
