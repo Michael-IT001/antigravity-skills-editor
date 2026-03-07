@@ -1,6 +1,6 @@
 # 🧠 Ultra Skills Editor v2.0
 
-> A beautifully crafted, multi-language skills management extension for **VSCode**, **Cursor**, **Trae**, **Antigravity**, **Qoder**, **Windsurf**, & **CodeBuddy**.  
+> A beautifully crafted, multi-language skills management extension for **VSCode**, **Cursor**, **Trae**, **Trae CN**, **Antigravity**, **Qoder**, **Windsurf**, & **CodeBuddy**.  
 > Create, edit, search, preview, import, export, and organize your AI skills — all from a single, elegant panel.
 
 ---

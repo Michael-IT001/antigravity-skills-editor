@@ -2,6 +2,10 @@
 
 All notable changes to the **Ultra Skills Editor** will be documented in this file.
 
+## [2.1.2] - 2026-03-07
+### 📝 Documentation Fix
+- 📝 **Intro Text Update**: Added `Trae CN` explicitly to the bolded introduction list in the `README.md` to perfectly match the 8 supported platforms.
+
 ## [2.1.1] - 2026-03-07
 ### 🌐 Precision Environment Routing
 - 🚀 **8 IDEs Supported**: Explicitly separated **Trae** (`.trae`) and **Trae CN** (`.trae-cn`) into completely independent storage and project workspaces to ensure absolute isolation for users operating both clients simultaneously. Total officially supported IDEs is now **8**.
