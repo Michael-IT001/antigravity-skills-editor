@@ -2,6 +2,9 @@
 
 All notable changes to the **Ultra Skills Editor** will be documented in this file.
 
+## [2.1.0] - 2026-03-07
+### 🌐 Universal IDE Expansion
+- 🚀 **7 IDEs Supported**: Added native path resolution and intelligent workspace routing for **VSCode**, **Qoder**, **Windsurf**, and **CodeBuddy**, bringing the total officially supported IDEs to **7** (alongside Cursor, Trae, and Antigravity). All paths are automatically insulated!
 
 ## [2.0.1] - 2026-03-07
 ### 📝 Documentation & Integrity Update
@@ -15,7 +18,7 @@ All notable changes to the **Ultra Skills Editor** will be documented in this fi
 - 📤 **Export**: Export individual skills as `.md` files via the new toolbar button
 - 🎨 **UI Enhancements**: Added description previews in the sidebar and a total skills count in the footer
 - 🏗️ **Architecture**: Reduced SkillsPanel.js from 1625 lines to 956 lines while adding significant new features
-- 🚀 **Ultimate IDE Compatibility**: Full native support and intelligent path resolution for **Trae (Global & CN)**, **Cursor**, and **Antigravity**. Global and project-level skills will now automatically bind to your specific editor's native workspace environment without conflicts!
+- 🚀 **Initial IDE Compatibility**: Full native support and path resolution for **Trae (Global & CN)**, **Cursor**, and **Antigravity**. Global and project-level skills will now automatically bind to your specific editor's native workspace environment!
 
 ## [1.8.7] - 2026-03-07
 - 📝 **Pro Tip**: Explicitly added `Shift + Drag` instructions to the main introduction and "How to Open" sections in the documentation so that it's physically impossible for users to miss it! 😆

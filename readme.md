@@ -1,6 +1,6 @@
 # 🧠 Ultra Skills Editor v2.0
 
-> A beautifully crafted, multi-language skills management extension for **Trae**, **Cursor**, & **Antigravity**.  
+> A beautifully crafted, multi-language skills management extension for **VSCode**, **Cursor**, **Trae**, **Antigravity**, **Qoder**, **Windsurf**, & **CodeBuddy**.  
 > Create, edit, search, preview, import, export, and organize your AI skills — all from a single, elegant panel.
 
 ---
@@ -25,7 +25,7 @@
 | ⌨️ **Keyboard Shortcuts** | `Cmd+F` search, `Cmd+N` new, `↑↓` navigate, `Tab` indent |
 | 📤 **Export** | Export individual skills as `.md` files via toolbar button |
 | 🎨 **Visual Polish** | Added description previews and total skills count in sidebar |
-| 🚀 **Ultimate IDE Support** | Native, transparent workspace support for Trae, Cursor, and Antigravity |
+| 🚀 **Universal IDE Support** | Native workspace path resolution for VSCode, Cursor, Trae, Antigravity, Qoder, Windsurf, and CodeBuddy |
 
 ---
 
@@ -80,13 +80,14 @@
 ## 📁 How Skills Are Stored
 
 ```
-~/.trae/skills/                 ← Global skills (Trae)
 ~/.cursor/skills/               ← Global skills (Cursor)
-~/.antigravity/skills/          ← Global skills (Antigravity)
-...
+~/.trae/skills/                 ← Global skills (Trae)
+~/.vscode/skills/               ← Global skills (VSCode)
+... (etc for qoder, windsurf, codebuddy, antigravity)
 
-<project>/.trae/skills/         ← Project skills (Trae)
 <project>/.cursor/skills/       ← Project skills (Cursor)
+<project>/.trae/skills/         ← Project skills (Trae)
+<project>/.vscode/skills/       ← Project skills (VSCode)
 <project>/.agent/skills/        ← Project skills (Antigravity)
 ...
 ```

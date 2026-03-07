@@ -81,6 +81,10 @@ class SkillsPanel {
         if (all.includes('trae-cn') || all.includes('trae_cn') || all.includes('traecn')) return 'trae-cn';
         if (all.includes('trae')) return 'trae';
         if (all.includes('cursor')) return 'cursor';
+        if (all.includes('qoder')) return 'qoder';
+        if (all.includes('windsurf')) return 'windsurf';
+        if (all.includes('codebuddy')) return 'codebuddy';
+        if (all.includes('visual studio') || all.includes('vscode')) return 'vscode';
         return 'antigravity';
     }
 
@@ -89,6 +93,10 @@ class SkillsPanel {
             'cursor': { globalDir: '.cursor', projectDir: '.cursor/skills' },
             'trae': { globalDir: '.trae', projectDir: '.trae/skills' },
             'trae-cn': { globalDir: '.trae-cn', projectDir: '.trae-cn/skills' },
+            'qoder': { globalDir: '.qoder', projectDir: '.qoder/skills' },
+            'windsurf': { globalDir: '.windsurf', projectDir: '.windsurf/skills' },
+            'codebuddy': { globalDir: '.codebuddy', projectDir: '.codebuddy/skills' },
+            'vscode': { globalDir: '.vscode', projectDir: '.vscode/skills' },
             'antigravity': { globalDir: '.antigravity', projectDir: '.agent/skills' }
         };
         return map[this._detectIDE()] || map['antigravity'];
