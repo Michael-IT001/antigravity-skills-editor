@@ -69,13 +69,15 @@ class SkillsPanel {
         if (SkillsPanel.currentPanel && SkillsPanel.currentPanel._panel && typeof SkillsPanel.currentPanel._panel.reveal === 'function') {
             SkillsPanel.currentPanel._panel.reveal(column); return;
         }
-        const panel = vscode.window.createWebviewPanel(SkillsPanel.viewType, 'Skills Editor', column || vscode.ViewColumn.One, { enableScripts: true, retainContextWhenHidden: true });
-
         let existing = SkillsPanel.currentPanel;
         if (!existing) {
             existing = new SkillsPanel(context);
             SkillsPanel.currentPanel = existing;
         }
+
+        const panelTitle = existing._i18n.title || 'My Skills';
+        const panel = vscode.window.createWebviewPanel(SkillsPanel.viewType, panelTitle, column || vscode.ViewColumn.One, { enableScripts: true, retainContextWhenHidden: true });
+
         existing._panel = panel;
         existing._setupPanel(panel);
     }
@@ -927,6 +929,32 @@ class SkillsPanel {
         }
         await this._removeKnownSkillPaths(Array.from(pathSet));
     }
+
+    _getCleanStatePaths(key) {
+        const arr = this._context.globalState.get(key, []);
+        if (!Array.isArray(arr)) return arr || [];
+        const cleanArr = arr.filter(p => {
+            if (!p || typeof p !== 'string') return false;
+            try { return fs.existsSync(p); } catch (e) { return false; }
+        });
+        if (cleanArr.length !== arr.length) this._context.globalState.update(key, cleanArr);
+        return cleanArr;
+    }
+
+    _getCleanTopLevelOrder() {
+        const arr = this._context.globalState.get('antigravitySkillsTopLevelOrder', []);
+        if (!Array.isArray(arr)) return arr || [];
+        const cleanArr = arr.filter(token => {
+            if (typeof token !== 'string') return false;
+            if (token.indexOf('skill:') === 0) {
+                try { return fs.existsSync(token.slice(6)); } catch(e) { return false; }
+            }
+            return true;
+        });
+        if (cleanArr.length !== arr.length) this._context.globalState.update('antigravitySkillsTopLevelOrder', cleanArr);
+        return cleanArr;
+    }
+
     async _postSkills(extra = {}) {
         this._loadRevision += 1;
         const currentRevision = this._loadRevision;
@@ -941,16 +969,21 @@ class SkillsPanel {
             this._skillsCache = [];
         }
         if (!this._panel || currentRevision !== this._loadRevision) return;
+
+        const cleanFavorites = this._getCleanStatePaths('antigravitySkillsFavorites');
+        const cleanRecents = this._getCleanStatePaths('antigravityRecentSkillPaths');
+        this._recentSkillPaths = cleanRecents;
+
         this._panel.webview.postMessage({
             command: 'loadSkills',
             skills: loadedSkills,
             revision: currentRevision,
-            topLevelOrder: this._context.globalState.get('antigravitySkillsTopLevelOrder', []),
+            topLevelOrder: this._getCleanTopLevelOrder(),
             groupOrder: this._context.globalState.get('antigravitySkillsGroupOrder', []),
             manualEmptyGroups: this._context.globalState.get('antigravitySkillsManualEmptyGroups', []),
-            favorites: this._context.globalState.get('antigravitySkillsFavorites', []),
+            favorites: cleanFavorites,
             collapsedGroups: this._context.globalState.get('antigravitySkillsCollapsedGroups', []),
-            recentSkills: Array.isArray(this._recentSkillPaths) ? this._recentSkillPaths : this._context.globalState.get('antigravityRecentSkillPaths', []),
+            recentSkills: cleanRecents,
             restoreState,
             ...extra
         });
@@ -1265,10 +1298,14 @@ class SkillsPanel {
             `<option value="${code}" ${code === currentLang ? 'selected' : ''}>${tr.name}</option>`
         ).join('');
         const tJson = JSON.stringify(t).replace(/</g, '\\u003c').replace(/>/g, '\\u003e');
+        
+        const cleanFavorites = this._getCleanStatePaths('antigravitySkillsFavorites');
+        const cleanTopLevelOrder = this._getCleanTopLevelOrder();
+
         const savedGroupOrder = JSON.stringify(this._context.globalState.get('antigravitySkillsGroupOrder', []));
-        const savedTopLevelOrder = JSON.stringify(this._context.globalState.get('antigravitySkillsTopLevelOrder', []));
+        const savedTopLevelOrder = JSON.stringify(cleanTopLevelOrder);
         const savedManualEmptyGroups = JSON.stringify(this._context.globalState.get('antigravitySkillsManualEmptyGroups', []));
-        const savedFavorites = JSON.stringify(this._context.globalState.get('antigravitySkillsFavorites', []));
+        const savedFavorites = JSON.stringify(cleanFavorites);
         const savedCollapsedGroups = JSON.stringify(this._context.globalState.get('antigravitySkillsCollapsedGroups', []));
 
 
@@ -1292,8 +1329,8 @@ class SkillsPanel {
                             --group-reorder-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
 	                    }
                     * { box-sizing: border-box; }
-                    body { font-family: var(--vscode-font-family); padding: 0; margin: 0; color: var(--vscode-editor-foreground); background-color: var(--vscode-editor-background); display: flex; height: 100vh; overflow: hidden; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; font-kerning: normal; }
-                    body.is-resizing, body.is-resizing * { cursor: col-resize !important; user-select: none !important; }
+                    body { font-family: var(--vscode-font-family); padding: 0; margin: 0; color: var(--vscode-editor-foreground); background-color: var(--vscode-editor-background); display: flex; height: 100vh; overflow: hidden; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; font-kerning: normal; --resizer-cursor: col-resize; }
+                    body.is-resizing, body.is-resizing * { cursor: var(--resizer-cursor) !important; user-select: none !important; }
                     .sidebar { width: var(--sidebar-width); min-width: 180px; max-width: 80%; background-color: var(--vscode-sideBar-background); border-right: 1px solid var(--vscode-widget-border, var(--vscode-panel-border)); display: flex; flex-direction: column; z-index: 10; position: relative; }
                     .resizer { width: 4px; cursor: col-resize; background-color: transparent; transition: background-color 0.2s; z-index: 20; margin-right: -2px; margin-left: -2px; touch-action: none; }
                     .resizer:hover, .resizer.active { background-color: var(--vscode-focusBorder); }
@@ -1302,6 +1339,10 @@ class SkillsPanel {
                     .header-actions { display: flex; gap: 2px; align-items: center; }
                     .add-btn { background: transparent; border: none; color: var(--vscode-icon-foreground); cursor: pointer; padding: 5px; border-radius: var(--radius); display: flex; align-items: center; justify-content: center; transition: all var(--transition-speed); }
                     .add-btn:hover { background-color: var(--vscode-toolbar-hoverBackground); transform: scale(1.05); }
+                    .header-actions .add-btn[data-header-icon] { min-width: 28px; min-height: 28px; outline: none; }
+                    .header-actions .add-btn[data-header-icon] .icon { width: 18px; height: 18px; }
+                    .header-actions .add-btn[data-header-icon]:focus { outline: none; box-shadow: none; }
+                    .header-actions .add-btn[data-header-icon]:focus-visible { outline: 1px solid color-mix(in srgb, var(--vscode-focusBorder, #3794ff) 70%, transparent); outline-offset: 1px; }
                     /* Search bar */
                     .search-container { padding: 6px 10px; border-bottom: 1px solid var(--vscode-widget-border, var(--vscode-panel-border)); display: flex; gap: 4px; align-items: center; }
                     .search-input { width: 100%; background-color: var(--vscode-input-background); color: var(--vscode-input-foreground); border: 1px solid var(--vscode-input-border); padding: 5px 8px 5px 28px; font-size: 12px; border-radius: var(--radius); outline: none; font-family: inherit; transition: border-color var(--transition-speed); }
@@ -1319,9 +1360,10 @@ class SkillsPanel {
                     .group-header:hover { opacity: 1; background: color-mix(in srgb, var(--vscode-list-hoverBackground, rgba(128,128,128,0.12)) 82%, transparent); border-left-color: color-mix(in srgb, var(--vscode-textLink-foreground, #3794ff) 72%, transparent); }
                     .group-header .group-arrow + span { font-size: 12.5px; font-weight: 700; letter-spacing: 0.18px; color: color-mix(in srgb, var(--vscode-sideBarTitle-foreground) 92%, white 8%); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
                     .group-header .icon { width: 12px; height: 12px; margin-right: 7px; flex-shrink: 0; opacity: 0.84; }
-                    .group-arrow { display: inline-flex; align-items: center; justify-content: center; cursor: pointer; padding: 3px; margin: -3px 2px -3px -2px; border-radius: 5px; transition: background 0.12s ease, transform 0.2s cubic-bezier(0.22, 0.61, 0.36, 1); transform: rotate(0deg); flex-shrink: 0; }
+                    .group-arrow { display: inline-flex; align-items: center; justify-content: center; cursor: pointer; padding: 4px 6px; margin: -4px 4px -4px -4px; border-radius: 6px; transition: background 0.12s ease; flex-shrink: 0; }
+                    .group-arrow .icon { margin-right: 0; transition: transform 0.2s cubic-bezier(0.22, 0.61, 0.36, 1); transform: rotate(0deg); }
                     .group-arrow:hover { background: rgba(128,128,128,0.18); }
-                    .group-header:not(.collapsed) .group-arrow { transform: rotate(90deg); }
+                    .group-header:not(.collapsed) .group-arrow .icon { transform: rotate(90deg); }
                     .group-header .group-count { min-width: 22px; font-size: 10px; font-weight: 700; background: color-mix(in srgb, var(--vscode-badge-background, rgba(128,128,128,0.22)) 78%, transparent); color: color-mix(in srgb, var(--vscode-badge-foreground, var(--vscode-sideBarTitle-foreground)) 86%, white 14%); padding: 0 8px; border-radius: 999px; margin-left: 8px; line-height: 18px; border: 1px solid color-mix(in srgb, var(--vscode-sideBar-border, rgba(128,128,128,0.24)) 56%, transparent); box-shadow: inset 0 1px 0 rgba(255,255,255,0.04); }
                     .group-items.collapsed { display: none; }
                     .group-items { min-height: 18px; padding: 2px 0; position: relative; } /* Keeps group footprint stable for drag targets */
@@ -1775,7 +1817,7 @@ class SkillsPanel {
                         .sidebar { width: 100% !important; min-width: 0; flex: none; max-width: none; height: 40%; border-right: none; border-bottom: 1px solid var(--vscode-widget-border); }
                         body { flex-direction: column; }
                         .main-area { width: 100%; min-height: 0; }
-                        .resizer { display: none; }
+                        .resizer { display: block; width: 100%; height: 4px; cursor: row-resize; margin: -2px 0; }
                         .editor-header { padding: 0 12px; }
                         .save-btn span { display: none; }
                         .save-btn { width: 32px; padding: 0; gap: 0; }
@@ -1788,19 +1830,19 @@ class SkillsPanel {
                     <div class="sidebar-header">
                         <div class="sidebar-title">${t.title}</div>
                         <div class="header-actions">
-                            <button class="add-btn" id="expandCollapseBtn" title="${t.expandAllBtn || 'Expand/Collapse All'}">
+                            <button class="add-btn" id="expandCollapseBtn" data-header-icon="expand" title="${t.expandAllBtn || 'Expand/Collapse All'}">
                                 <svg class="icon" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M1 2h14v12H1V2zm1 1v10h12V3H2zm2 4h8v2H4V7z"/></svg>
                             </button>
                             <button class="add-btn" id="clearBtn" title="${t.clearCart}" style="display:none; color: var(--vscode-errorForeground);">
                                 <svg class="icon" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm0 13a6 6 0 1 1 0-12 6 6 0 0 1 0 12z"/><path d="M11.35 4.65a.5.5 0 0 0-.7-.7l-6 6a.5.5 0 0 0 .7.7l6-6z"/></svg>
                             </button>
-                            <button class="add-btn" id="smartGroupBtn" title="${t.smartGroup || 'Smart Group'}">
+                            <button class="add-btn" id="smartGroupBtn" data-header-icon="smart-group" title="${t.smartGroup || 'Smart Group'}">
                                 <svg class="icon" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M14 4H9.618l-1-2H2a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1zm0 9H2V5h12v8z"/><path fill="currentColor" d="M10.5 6.5l.75 1.5 1.5.75-1.5.75-.75 1.5-.75-1.5-1.5-.75 1.5-.75zM6.5 9l.5 1 1 .5-1 .5-.5 1-.5-1-1-.5 1-.5z"/></svg>
                             </button>
-                            <button class="add-btn" id="importBtn" title="${t.importBtn}">
+                            <button class="add-btn" id="importBtn" data-header-icon="import" title="${t.importBtn}">
                                 <svg class="icon" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M11.5 1h-7l-.5.5V5H1.5l-.5.5v9l.5.5h13l.5-.5v-9l-.5-.5H12V1.5l-.5-.5zM5 2h6v3H5V2zm9 12H2V6h12v8z"/><path d="M5 8h6v1H5z"/></svg>
                             </button>
-                            <button class="add-btn" id="newSkillBtn" title="${t.create}">
+                            <button class="add-btn" id="newSkillBtn" data-header-icon="new" title="${t.create}">
                                 <svg class="icon" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M14 7v1H8v6H7V8H1V7h6V1h1v6h6z"/></svg>
                             </button>
                         </div>
@@ -2051,13 +2093,18 @@ class SkillsPanel {
 		                    let suppressClickUntil = 0;
 	                        let uiStateSaveTimer = 0;
                         const COMPACT_LAYOUT_MAX_WIDTH = 600;
+                        const DEFAULT_COMPACT_SIDEBAR_RATIO = 0.4;
+                        const MIN_COMPACT_SIDEBAR_HEIGHT = 180;
+                        const MIN_COMPACT_MAIN_HEIGHT = 220;
                         let desktopSidebarWidth = null;
+                        let compactSidebarRatio = null;
 
 		                    const skillList = document.getElementById('skillList');
 	                    const searchInput = document.getElementById('searchInput');
 	                    const filterTabs = document.getElementById('filterTabs');
 	                    const langSelect = document.getElementById('langSelect');
 	                    const importBtn = document.getElementById('importBtn');
+                        const headerActionButtons = Array.from(document.querySelectorAll('.header-actions .add-btn[data-header-icon]'));
                         const sidebarEl = document.getElementById('sidebar');
                     const dropLineIndicator = document.createElement('div');
                     dropLineIndicator.className = 'drop-line-indicator';
@@ -2071,6 +2118,27 @@ class SkillsPanel {
                     const clearBtn = document.getElementById('clearBtn');
                     const createModal = document.getElementById('createModal');
                     const newSkillInput = document.getElementById('newSkillInput');
+                    function suppressPointerFocus(button) {
+                        if (!button) return;
+                        let pointerFocusPending = false;
+                        const onPointerPress = (e) => {
+                            if (e.type === 'pointerdown' && e.pointerType && e.pointerType !== 'mouse' && e.pointerType !== 'pen') return;
+                            if (e.type === 'mousedown' && typeof window !== 'undefined' && window.PointerEvent) return;
+                            if (typeof e.button === 'number' && e.button !== 0) return;
+                            pointerFocusPending = true;
+                            e.preventDefault();
+                        };
+                        button.addEventListener('pointerdown', onPointerPress);
+                        button.addEventListener('mousedown', onPointerPress);
+                        button.addEventListener('click', () => {
+                            if (!pointerFocusPending) return;
+                            button.blur();
+                            pointerFocusPending = false;
+                        });
+                        button.addEventListener('keydown', () => { pointerFocusPending = false; });
+                        button.addEventListener('blur', () => { pointerFocusPending = false; });
+                    }
+                    headerActionButtons.forEach(suppressPointerFocus);
                     function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 	                    const defaultGroupLabels = {
                         'Ungrouped': t.ungrouped || 'Ungrouped',
@@ -2093,6 +2161,27 @@ class SkillsPanel {
                             const maxWidth = Math.max(minWidth, Math.floor(window.innerWidth * 0.8));
                             return Math.max(minWidth, Math.min(Math.round(nextWidth), maxWidth));
                         }
+                        function getCompactSidebarRatioValue() {
+                            if (typeof compactSidebarRatio === 'number' && isFinite(compactSidebarRatio) && compactSidebarRatio > 0) {
+                                return compactSidebarRatio;
+                            }
+                            return DEFAULT_COMPACT_SIDEBAR_RATIO;
+                        }
+                        function clampCompactSidebarHeightValue(nextHeight) {
+                            const viewportHeight = Math.max(window.innerHeight || 0, MIN_COMPACT_SIDEBAR_HEIGHT + MIN_COMPACT_MAIN_HEIGHT);
+                            const maxHeight = Math.max(0, viewportHeight - MIN_COMPACT_MAIN_HEIGHT);
+                            const minHeight = Math.min(MIN_COMPACT_SIDEBAR_HEIGHT, maxHeight);
+                            return Math.max(minHeight, Math.min(Math.round(nextHeight), maxHeight));
+                        }
+                        function applyCompactSidebarHeight(nextHeight) {
+                            if (!sidebarEl) return;
+                            const clampedHeight = clampCompactSidebarHeightValue(nextHeight);
+                            const viewportHeight = Math.max(window.innerHeight || 1, 1);
+                            compactSidebarRatio = clampedHeight / viewportHeight;
+                            if (isCompactLayout()) {
+                                sidebarEl.style.height = clampedHeight + 'px';
+                            }
+                        }
                         function syncResponsiveSidebar() {
                             if (!sidebarEl) return;
                             if (isCompactLayout()) {
@@ -2101,8 +2190,14 @@ class SkillsPanel {
                                     desktopSidebarWidth = clampSidebarWidthValue(inlineWidth);
                                 }
                                 sidebarEl.style.removeProperty('width');
+                                applyCompactSidebarHeight(window.innerHeight * getCompactSidebarRatioValue());
                                 return;
                             }
+                            const inlineHeight = parseInt(sidebarEl.style.height || '', 10);
+                            if (Number.isFinite(inlineHeight) && inlineHeight > 0) {
+                                applyCompactSidebarHeight(inlineHeight);
+                            }
+                            sidebarEl.style.removeProperty('height');
                             if (typeof desktopSidebarWidth === 'number' && desktopSidebarWidth >= 180) {
                                 sidebarEl.style.width = clampSidebarWidthValue(desktopSidebarWidth) + 'px';
                             }
@@ -2133,7 +2228,8 @@ class SkillsPanel {
                                 editorScrollTop: editor ? editor.scrollTop : 0,
                                 editorSelectionStart: editor ? editor.selectionStart : 0,
                                 editorSelectionEnd: editor ? editor.selectionEnd : 0,
-	                                sidebarWidth: (typeof sidebarWidth === 'number' && sidebarWidth >= 180) ? Math.round(sidebarWidth) : null
+	                                sidebarWidth: (typeof sidebarWidth === 'number' && sidebarWidth >= 180) ? Math.round(sidebarWidth) : null,
+                                    compactSidebarRatio: (typeof compactSidebarRatio === 'number' && isFinite(compactSidebarRatio) && compactSidebarRatio > 0) ? compactSidebarRatio : null
 	                            };
 	                        }
                         function arraysEqual(a, b) {
@@ -2174,8 +2270,8 @@ class SkillsPanel {
                         return typeof groupKey === 'string' && groupKey.startsWith('smart.');
                     }
                     function getGroupArrowSvg(isCollapsed) {
-                        // Single chevron SVG, rotation handled by CSS
-                        return '<span class="group-arrow"><svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 3.5L10 8l-4.5 4.5"/></svg></span>';
+                        // Solid Codicon-style chevron for a more premium, clickable Cursor look
+                        return '<span class="group-arrow"><svg class="icon" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.072 8.024L5.715 3.667l.618-.62L11 7.716v.618L6.333 13l-.618-.619 4.357-4.357z"/></svg></span>';
                     }
                     function moveSkillPathsToUngrouped(skillPaths) {
                         return moveSkillBatch(skillPaths, { kind: 'bottom', newGroup: '' });
@@ -2723,6 +2819,7 @@ class SkillsPanel {
                                 let desiredEditorSelectionStart = null;
                                 let desiredEditorSelectionEnd = null;
                                 let desiredSidebarWidth = null;
+                                let desiredCompactSidebarRatio = null;
 	                            if (message.restoreState) {
 	                                if (Array.isArray(message.restoreState.collapsedGroups)) collapsedGroups = new Set(message.restoreState.collapsedGroups);
 	                                if (typeof message.restoreState.currentPath === 'string' && message.restoreState.currentPath) desiredCurrentPath = message.restoreState.currentPath;
@@ -2734,10 +2831,14 @@ class SkillsPanel {
                                     if (typeof message.restoreState.editorSelectionStart === 'number') desiredEditorSelectionStart = message.restoreState.editorSelectionStart;
                                     if (typeof message.restoreState.editorSelectionEnd === 'number') desiredEditorSelectionEnd = message.restoreState.editorSelectionEnd;
                                     if (typeof message.restoreState.sidebarWidth === 'number') desiredSidebarWidth = message.restoreState.sidebarWidth;
+                                    if (typeof message.restoreState.compactSidebarRatio === 'number' && isFinite(message.restoreState.compactSidebarRatio) && message.restoreState.compactSidebarRatio > 0) desiredCompactSidebarRatio = message.restoreState.compactSidebarRatio;
 	                            }
                                 filterType = desiredFilterType || 'all';
                                 searchQuery = (typeof desiredSearchQuery === 'string' ? desiredSearchQuery : '').toLowerCase();
                                 if (searchInput) searchInput.value = typeof desiredSearchQuery === 'string' ? desiredSearchQuery : '';
+                                    if (typeof desiredCompactSidebarRatio === 'number') {
+                                        compactSidebarRatio = desiredCompactSidebarRatio;
+                                    }
                                     if (typeof desiredSidebarWidth === 'number' && desiredSidebarWidth >= 180) {
                                         desktopSidebarWidth = desiredSidebarWidth;
                                     }
@@ -2964,7 +3065,7 @@ class SkillsPanel {
                         ensureDragIndicatorElements();
                         skillList.scrollTop = prevScrollTop;
                         syncExpandCollapseIcon();
-                        if (clearBtn) clearBtn.style.display = (selectedSkills.size > 0 || selectedSkillsMap.size > 0) ? 'flex' : 'none';
+                        if (clearBtn) clearBtn.style.display = selectedSkillsMap.size > 0 ? 'flex' : 'none';
                         if (totalCount) totalCount.textContent = (t.totalSkills || 'Total Skills') + ': ' + skills.length;
                     }
 
@@ -2992,6 +3093,47 @@ class SkillsPanel {
                     }
                     function clearVisualSelection() {
                         selectedSkills.clear();
+                    }
+                    function clearGroupSelection() {
+                        if (selectedGroups.size === 0 && !skillList.querySelector('.group-header.selected, .group-header.drag-proxy-peer')) return false;
+                        selectedGroups.clear();
+                        lastSelectedGroupName = null;
+                        skillList.querySelectorAll('.group-header.selected, .group-header.drag-proxy-peer').forEach(function(headerEl) {
+                            headerEl.classList.remove('selected', 'drag-proxy-peer');
+                        });
+                        return true;
+                    }
+                    function syncGroupSelectionVisuals() {
+                        skillList.querySelectorAll('.skill-group[data-group]').forEach(function(groupEl) {
+                            const groupName = groupEl.getAttribute('data-group');
+                            const headerEl = groupEl.querySelector('.group-header');
+                            if (!headerEl) return;
+                            headerEl.classList.toggle('selected', selectedGroups.has(groupName));
+                        });
+                    }
+                    function setSingleGroupSelection(groupName) {
+                        if (!groupName) {
+                            clearGroupSelection();
+                            return;
+                        }
+                        selectedGroups = new Set([groupName]);
+                        lastSelectedGroupName = groupName;
+                        syncGroupSelectionVisuals();
+                    }
+                    function getVisibleGroupNames() {
+                        return Array.from(skillList.querySelectorAll('.skill-group[data-group]')).map(function(groupEl) {
+                            return groupEl.getAttribute('data-group');
+                        }).filter(Boolean);
+                    }
+                    function getVisibleGroupRange(anchorGroupName, targetGroupName) {
+                        const visibleGroupNames = getVisibleGroupNames();
+                        const targetIndex = visibleGroupNames.indexOf(targetGroupName);
+                        if (targetIndex === -1) return [];
+                        const anchorIndex = visibleGroupNames.indexOf(anchorGroupName);
+                        if (anchorIndex === -1) return [targetGroupName];
+                        const start = Math.min(anchorIndex, targetIndex);
+                        const end = Math.max(anchorIndex, targetIndex);
+                        return visibleGroupNames.slice(start, end + 1);
                     }
                     function clearAtSelection() {
                         selectedSkillsMap.clear();
@@ -3265,38 +3407,64 @@ class SkillsPanel {
                     acceptConfirmBtn.addEventListener('click', () => { if (confirmCallback) confirmCallback(); closeConfirmModal(); });
                     confirmModal.addEventListener('click', (e) => { if (e.target === confirmModal) closeConfirmModal(); });
 
-                    // Group header double-click to toggle collapse
-                    skillList.addEventListener('dblclick', (e) => {
-                        const groupHeader = e.target.closest('.group-header');
-                        if (!groupHeader) return;
-                        if (e.shiftKey || e.metaKey || e.ctrlKey) return;
+                    function toggleGroupCollapse(groupHeader) {
+                        if (!groupHeader) return false;
                         const gName = groupHeader.parentElement.getAttribute('data-group');
+                        if (!gName) return false;
                         if (collapsedGroups.has(gName)) collapsedGroups.delete(gName);
                         else collapsedGroups.add(gName);
+                        clearGroupSelection();
                         vscode.postMessage({ command: 'saveCollapsedGroups', collapsedGroups: Array.from(collapsedGroups) });
                         renderList();
                         syncExpandCollapseIcon();
                         scheduleUiStateSave();
+                        return true;
+                    }
+
+                    // Group header double-click to toggle collapse
+                    skillList.addEventListener('dblclick', (e) => {
+                        const groupHeader = e.target.closest('.group-header');
+                        if (!groupHeader) return;
+                        if (e.target.closest('.group-arrow')) return;
+                        if (e.shiftKey || e.metaKey || e.ctrlKey) return;
+                        toggleGroupCollapse(groupHeader);
+                    });
+
+                    // Arrow should toggle immediately on single click and never start a drag gesture.
+                    skillList.addEventListener('mousedown', (e) => {
+                        if (e.button !== 0) return;
+                        const clickedArrow = e.target.closest('.group-arrow');
+                        if (!clickedArrow) return;
+                        e.preventDefault();
+                        e.stopPropagation();
                     });
 
                     // Skill list click
                     skillList.addEventListener('click', (e) => {
                         if (Date.now() < suppressClickUntil) return;
+                        const clickedArrow = e.target.closest('.group-arrow');
+                        if (clickedArrow) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            if (e.shiftKey || e.metaKey || e.ctrlKey) return;
+                            const groupHeader = clickedArrow.closest('.group-header');
+                            toggleGroupCollapse(groupHeader);
+                            return;
+                        }
+
                         const groupHeader = e.target.closest('.group-header');
-	                        if (groupHeader) {
-                                // Only toggle on arrow click (not whole header)
-                                const clickedArrow = e.target.closest('.group-arrow');
-                                if (!clickedArrow) return;
-                                if (e.shiftKey || e.metaKey || e.ctrlKey) return;
-	                            const gName = groupHeader.parentElement.getAttribute('data-group');
-	                            if (collapsedGroups.has(gName)) collapsedGroups.delete(gName);
-	                            else collapsedGroups.add(gName);
-	                            vscode.postMessage({ command: 'saveCollapsedGroups', collapsedGroups: Array.from(collapsedGroups) });
-	                            renderList();
-	                            syncExpandCollapseIcon();
-                                scheduleUiStateSave();
-	                            return;
-	                        }
+		                        if (groupHeader) {
+                            if (!e.shiftKey && !e.metaKey && !e.ctrlKey && !e.altKey) {
+                                const groupName = groupHeader.parentElement.getAttribute('data-group');
+                                setSingleGroupSelection(groupName);
+                            }
+                            return;
+                        }
+
+                        const shouldClearGroupSelection = !e.shiftKey && !e.metaKey && !e.ctrlKey;
+                        if (shouldClearGroupSelection) {
+                            clearGroupSelection();
+                        }
 
                         const favAction = e.target.closest('[data-action="toggle-favorite"]');
                         if (favAction) {
@@ -3401,9 +3569,18 @@ class SkillsPanel {
                                     renderList(); // Ensure visual update
                                 }
                             }
-                        } else if (selectedSkills.size > 0) {
-                            clearVisualSelection();
-                            renderList();
+                        } else {
+                            let needsRender = false;
+                            if (selectedSkills.size > 0) {
+                                clearVisualSelection();
+                                needsRender = true;
+                            }
+                            if (shouldClearGroupSelection) {
+                                needsRender = clearGroupSelection() || needsRender;
+                            }
+                            if (needsRender) {
+                                renderList();
+                            }
                         }
                     });
 
@@ -3663,7 +3840,7 @@ class SkillsPanel {
                     }
 
                     // Clear selection
-                    clearBtn.addEventListener('click', () => { clearVisualSelection(); clearAtSelection(); lastSelectedPath = null; refreshListAndEditor(); _flushClipboard(); });
+                    clearBtn.addEventListener('click', () => { clearAtSelection(); refreshListAndEditor(); _flushClipboard(); });
 
                     // Context menus
                     const ctxMenu = document.getElementById('ctxMenu');
@@ -3712,6 +3889,25 @@ class SkillsPanel {
                         recentSkillPaths = nextRecentPaths;
                         vscode.postMessage({ command: 'saveRecentSkills', recentSkills: recentSkillPaths.slice() });
                     }
+                    function getOrderedGroupNames(groupNames) {
+                        const groupSet = new Set((groupNames || []).filter(Boolean));
+                        if (groupSet.size === 0) return [];
+                        const ordered = Array.from(topLevelOrder)
+                            .filter(function(token) { return token.startsWith('group:') && groupSet.has(token.slice(6)); })
+                            .map(function(token) { return token.slice(6); });
+                        const seen = new Set(ordered);
+                        groupSet.forEach(function(groupName) {
+                            if (!seen.has(groupName)) ordered.push(groupName);
+                        });
+                        return ordered;
+                    }
+                    function getContextGroupTargets() {
+                        if (!ctxGroupName || isUngrouped(ctxGroupName)) return [];
+                        if (selectedGroups.size > 1 && selectedGroups.has(ctxGroupName)) {
+                            return getOrderedGroupNames(Array.from(selectedGroups));
+                        }
+                        return [ctxGroupName];
+                    }
                     skillList.addEventListener('contextmenu', (e) => {
                         e.preventDefault();
                         e.stopPropagation();
@@ -3759,14 +3955,22 @@ class SkillsPanel {
                         if (groupHeaderTarget) {
                             ctxGroupName = groupHeaderTarget.parentElement.getAttribute('data-group');
                             if (isUngrouped(ctxGroupName)) return;
-                            var groupSkillCount = skills.filter(function(s) { return s.group === ctxGroupName; }).length;
+                            var contextGroupTargets = getContextGroupTargets();
+                            var contextGroupSet = new Set(contextGroupTargets);
+                            var groupSkillCount = skills.filter(function(s) { return contextGroupSet.has(s.group); }).length;
+                            var renameGroupBtn = document.getElementById('ctxRenameGroup');
                             var dissolveBtn = document.getElementById('ctxDissolveGroup');
+                            if (renameGroupBtn) renameGroupBtn.style.display = contextGroupTargets.length > 1 ? 'none' : 'flex';
                             if (dissolveBtn) {
                                 var span = dissolveBtn.querySelector('span');
                                 if (groupSkillCount === 0) {
-                                    if (span) span.textContent = t.deleteGroupBtn || 'Delete Group';
+                                    if (span) span.textContent = contextGroupTargets.length > 1
+                                        ? (t.deleteGroupsBtn || t.deleteGroupBtn || 'Delete Groups')
+                                        : (t.deleteGroupBtn || 'Delete Group');
                                 } else {
-                                    if (span) span.textContent = t.dissolveGroupBtn || 'Ungroup All';
+                                    if (span) span.textContent = contextGroupTargets.length > 1
+                                        ? (t.dissolveGroupsBtn || t.dissolveGroupBtn || 'Dissolve Groups')
+                                        : (t.dissolveGroupBtn || 'Ungroup All');
                                 }
                             }
                             showCtxMenu(groupCtxMenu, e.clientX, e.clientY);
@@ -3925,10 +4129,11 @@ class SkillsPanel {
                     }
                     document.getElementById('ctxRenameGroup').addEventListener('click', () => {
                         hideCtxMenus();
-                        if (!ctxGroupName) return;
-                        pendingRenameGroupName = ctxGroupName;
+                        const targetGroupNames = getContextGroupTargets();
+                        if (targetGroupNames.length !== 1) return;
+                        pendingRenameGroupName = targetGroupNames[0];
                         const renameGroupInput = document.getElementById('renameGroupInput');
-                        renameGroupInput.value = isBuiltInGroup(ctxGroupName) ? '' : ctxGroupName;
+                        renameGroupInput.value = isBuiltInGroup(pendingRenameGroupName) ? '' : pendingRenameGroupName;
                         document.getElementById('renameGroupModal').classList.add('active');
                         setTimeout(() => {
                             renameGroupInput.focus();
@@ -3937,20 +4142,32 @@ class SkillsPanel {
                     });
                     document.getElementById('ctxDissolveGroup').addEventListener('click', () => {
                         hideCtxMenus();
-                        if (!ctxGroupName) return;
-                        const targetSkills = skills.filter(s => s.group === ctxGroupName);
+                        const targetGroupNames = getContextGroupTargets();
+                        if (targetGroupNames.length === 0) return;
+                        const targetGroupSet = new Set(targetGroupNames);
+                        const targetSkills = skills.filter(function(skill) { return targetGroupSet.has(skill.group); });
+                        const orderedTargetSkillPaths = getOrderedSkillPaths(targetSkills.map(function(skill) { return skill.path; }));
                         if (targetSkills.length === 0) {
-                            manualEmptyGroups = manualEmptyGroups.filter(function(g) { return g !== ctxGroupName; });
-                            collapsedGroups.delete(ctxGroupName);
+                            manualEmptyGroups = manualEmptyGroups.filter(function(groupName) { return !targetGroupSet.has(groupName); });
+                            targetGroupNames.forEach(function(groupName) { collapsedGroups.delete(groupName); });
+                            clearGroupSelection();
                             vscode.postMessage({ command: 'saveCollapsedGroups', collapsedGroups: Array.from(collapsedGroups) });
                             renderList();
                             persistOrdering();
                             return;
                         }
-                        showConfirm(t.dissolveGroupTitle || 'Dissolve Group', t.dissolveGroupMsg || 'Move all skills out of this group?', () => {
-                            const updates = targetSkills.map(s => ({ skillPath: s.path, group: '' }));
-                            moveSkillPathsToUngrouped(targetSkills.map(s => s.path));
-                            collapsedGroups.delete(ctxGroupName);
+                        const dissolveTitle = targetGroupNames.length > 1
+                            ? (t.dissolveGroupsTitle || t.dissolveGroupTitle || 'Dissolve Groups')
+                            : (t.dissolveGroupTitle || 'Dissolve Group');
+                        const dissolveMsg = targetGroupNames.length > 1
+                            ? (t.dissolveGroupsMsg || t.dissolveGroupMsg || 'Move all skills out of these groups?')
+                            : (t.dissolveGroupMsg || 'Move all skills out of this group?');
+                        showConfirm(dissolveTitle, dissolveMsg, () => {
+                            const updates = orderedTargetSkillPaths.map(function(skillPath) { return { skillPath: skillPath, group: '' }; });
+                            moveSkillPathsToUngrouped(orderedTargetSkillPaths);
+                            manualEmptyGroups = manualEmptyGroups.filter(function(groupName) { return !targetGroupSet.has(groupName); });
+                            targetGroupNames.forEach(function(groupName) { collapsedGroups.delete(groupName); });
+                            clearGroupSelection();
                             vscode.postMessage({ command: 'saveCollapsedGroups', collapsedGroups: Array.from(collapsedGroups) });
                             refreshListAndEditor();
                             commitLayout(updates);
@@ -4082,10 +4299,19 @@ class SkillsPanel {
 	                    // Resizer
 	                    const resizer = document.getElementById('resizer'); let isResizing = false;
                         let resizeFrame = 0;
+                        let resizeAxis = 'x';
                         let pendingSidebarWidth = null;
-                        function flushSidebarWidth() {
+                        let pendingCompactSidebarHeight = null;
+                        function flushSidebarSize() {
                             resizeFrame = 0;
-                            if (!sidebarEl || pendingSidebarWidth === null) return;
+                            if (!sidebarEl) return;
+                            if (resizeAxis === 'y') {
+                                if (pendingCompactSidebarHeight === null) return;
+                                applyCompactSidebarHeight(pendingCompactSidebarHeight);
+                                pendingCompactSidebarHeight = null;
+                                return;
+                            }
+                            if (pendingSidebarWidth === null) return;
                             const clampedWidth = clampSidebarWidthValue(pendingSidebarWidth);
                             desktopSidebarWidth = clampedWidth;
                             if (!isCompactLayout()) {
@@ -4096,10 +4322,19 @@ class SkillsPanel {
                         function queueSidebarWidth(nextWidth) {
                             pendingSidebarWidth = nextWidth;
                             if (resizeFrame) return;
-                            resizeFrame = requestAnimationFrame(flushSidebarWidth);
+                            resizeFrame = requestAnimationFrame(flushSidebarSize);
+                        }
+                        function queueCompactSidebarHeight(nextHeight) {
+                            pendingCompactSidebarHeight = nextHeight;
+                            if (resizeFrame) return;
+                            resizeFrame = requestAnimationFrame(flushSidebarSize);
                         }
                         function handleMouseMove(e) {
                             if (!isResizing || !sidebarEl) return;
+                            if (resizeAxis === 'y') {
+                                queueCompactSidebarHeight(e.clientY);
+                                return;
+                            }
                             queueSidebarWidth(e.clientX);
                         }
                         function stopResizing() {
@@ -4109,9 +4344,10 @@ class SkillsPanel {
                                 cancelAnimationFrame(resizeFrame);
                                 resizeFrame = 0;
                             }
-                            if (pendingSidebarWidth !== null) flushSidebarWidth();
+                            if (pendingSidebarWidth !== null || pendingCompactSidebarHeight !== null) flushSidebarSize();
                             resizer.classList.remove('active');
                             document.body.classList.remove('is-resizing');
+                            document.body.style.removeProperty('--resizer-cursor');
                             document.body.style.cursor = '';
                             document.documentElement.style.cursor = '';
                             document.removeEventListener('mousemove', handleMouseMove);
@@ -4120,14 +4356,20 @@ class SkillsPanel {
                         }
                         resizer.addEventListener('mousedown', (e) => {
                             if (e.button !== 0) return;
-                            if (isCompactLayout()) return;
                             e.preventDefault();
+                            resizeAxis = isCompactLayout() ? 'y' : 'x';
                             isResizing = true;
                             resizer.classList.add('active');
                             document.body.classList.add('is-resizing');
-                            document.body.style.cursor = 'col-resize';
-                            document.documentElement.style.cursor = 'col-resize';
-                            queueSidebarWidth(e.clientX);
+                            const cursor = resizeAxis === 'y' ? 'row-resize' : 'col-resize';
+                            document.body.style.setProperty('--resizer-cursor', cursor);
+                            document.body.style.cursor = cursor;
+                            document.documentElement.style.cursor = cursor;
+                            if (resizeAxis === 'y') {
+                                queueCompactSidebarHeight(e.clientY);
+                            } else {
+                                queueSidebarWidth(e.clientX);
+                            }
                             document.addEventListener('mousemove', handleMouseMove, { passive: true });
                             document.addEventListener('mouseup', stopResizing);
                         });
@@ -4141,6 +4383,7 @@ class SkillsPanel {
                     let draggedSkillPaths = [];
                     let draggedPrimaryPath = null;
                     let selectedGroups = new Set(); // multi-select groups
+                    let lastSelectedGroupName = null;
                     const dragEngine = {
                         isDragging: false,
                         type: null, // 'skill' or 'group'
@@ -4194,9 +4437,15 @@ class SkillsPanel {
                                 el.classList.remove('drag-batch-peer');
                             });
                         },
+                        getSkillDragProxyIconSvg() {
+                            return '<svg width="12" height="12" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'
+                                + '<rect x="2" y="4" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.2"/>'
+                                + '<rect x="7" y="2" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.2"/>'
+                                + '</svg>';
+                        },
                         buildBatchProxy() {
                             const primarySkill = skills.find((skill) => skill.path === draggedPrimaryPath) || skills[this.sourceIndex];
-                            const title = escHtml((primarySkill && (primarySkill.displayName || primarySkill.name)) || (t.copyToChat || 'Selected skills'));
+                            const title = escHtml((primarySkill && (primarySkill.displayName || primarySkill.name)) || 'Selected skills');
                             const countLabel = (t.dragBatchLabel || 'Selected {0} skills').replace('{0}', this.draggedCount);
                             const proxy = document.createElement('div');
                             proxy.className = 'batch-drag-proxy';
@@ -4204,7 +4453,7 @@ class SkillsPanel {
                                 '<div class="batch-drag-proxy__layer batch-drag-proxy__layer--back"></div>' +
                                 '<div class="batch-drag-proxy__layer batch-drag-proxy__layer--mid"></div>' +
                                 '<div class="batch-drag-proxy__card">' +
-                                    '<div class="batch-drag-proxy__icon">@</div>' +
+                                    '<div class="batch-drag-proxy__icon">' + this.getSkillDragProxyIconSvg() + '</div>' +
                                     '<div class="batch-drag-proxy__body">' +
                                         '<div class="batch-drag-proxy__title">' + title + '</div>' +
                                         '<div class="batch-drag-proxy__meta">' + escHtml(countLabel) + '</div>' +
@@ -4220,7 +4469,7 @@ class SkillsPanel {
                             proxy.className = 'single-drag-proxy';
 	                            proxy.innerHTML =
 	                                '<div class="single-drag-proxy__card">' +
-	                                    '<div class="single-drag-proxy__icon">@</div>' +
+	                                    '<div class="single-drag-proxy__icon">' + this.getSkillDragProxyIconSvg() + '</div>' +
 	                                    '<div class="single-drag-proxy__title">' + title + '</div>' +
 	                                '</div>';
 	                            return proxy;
@@ -4415,34 +4664,38 @@ class SkillsPanel {
                         onMouseDown(e) {
                             if (e.button !== 0) return;
                             if (e.target.closest('.favorite-star') || e.target.closest('.icon-container')) return;
+                            if (e.target.closest('.group-arrow')) return;
                             if (e.target.closest('input') || e.target.closest('button')) return;
 
                             const item = e.target.closest('.skill-item');
                             const header = e.target.closest('.group-header');
 
-                            // Shift+click on group header = multi-select groups
-                            if (header && (e.shiftKey || e.metaKey || e.ctrlKey) && !item) {
+                            // Shift+click selects a visible range of groups; Ctrl/Cmd+click toggles a single group.
+                            if (header && !item && e.shiftKey) {
+                                e.preventDefault();
+                                const groupName = header.parentElement.getAttribute('data-group');
+                                if (groupName) {
+                                    const rangeGroupNames = getVisibleGroupRange(lastSelectedGroupName, groupName);
+                                    selectedGroups = new Set(rangeGroupNames);
+                                    lastSelectedGroupName = groupName;
+                                    syncGroupSelectionVisuals();
+                                }
+                                return;
+                            }
+
+                            if (header && !item && (e.metaKey || e.ctrlKey)) {
                                 e.preventDefault();
                                 const groupName = header.parentElement.getAttribute('data-group');
                                 if (groupName) {
                                     if (selectedGroups.has(groupName)) {
                                         selectedGroups.delete(groupName);
-                                        header.classList.remove('selected');
                                     } else {
                                         selectedGroups.add(groupName);
-                                        header.classList.add('selected');
                                     }
+                                    lastSelectedGroupName = groupName;
+                                    syncGroupSelectionVisuals();
                                 }
                                 return;
-                            }
-
-                            // Normal click on group: clear group selection unless clicking already-selected
-                            if (header && !item && !e.shiftKey && !e.metaKey && !e.ctrlKey) {
-                                const groupName = header.parentElement.getAttribute('data-group');
-                                if (!selectedGroups.has(groupName)) {
-                                    selectedGroups.clear();
-                                    skillList.querySelectorAll('.group-header.selected').forEach(function(h) { h.classList.remove('selected'); });
-                                }
                             }
 
                             if (e.shiftKey || e.metaKey || e.ctrlKey || e.altKey) return;
@@ -4582,12 +4835,23 @@ class SkillsPanel {
                                 let nextTargetIndex = this.targetIndex;
                                 let nextTargetGroup = this.targetGroup;
                                 let nextTargetIntent = this.targetIntent;
+                                let found = false;
 	                            if (this.type === 'skill') {
+                                    const collapsedHeaderTargets = Array.from(skillList.querySelectorAll('.skill-group[data-group] > .group-header.collapsed'));
+                                    const hoveredCollapsedHeader = collapsedHeaderTargets.find((headerEl) => {
+                                        const rect = headerEl.getBoundingClientRect();
+                                        return this.pointerX >= rect.left && this.pointerX <= rect.right && clientY >= rect.top && clientY <= rect.bottom;
+                                    });
+                                    if (hoveredCollapsedHeader) {
+                                        nextTargetIndex = -1;
+                                        nextTargetGroup = hoveredCollapsedHeader.parentElement.getAttribute('data-group') || '';
+                                        nextTargetIntent = 'into-group';
+                                        found = true;
+                                    }
 	                                this.siblings = Array.from(skillList.querySelectorAll('.skill-item'));
                             } else {
                                 this.siblings = Array.from(skillList.querySelectorAll('.group-header'));
                             }
-                            let found = false;
                             const proxyMid = clientY;
                             let previousSkillCandidate = null;
                             let previousGroupCandidate = null;
@@ -4672,6 +4936,16 @@ class SkillsPanel {
                                 this.lastResolvedTargetKey = nextTargetKey;
 
 	                            if (this.type === 'skill') {
+                                    if (this.targetIntent === 'into-group') {
+                                        const targetGroupEl = this.findGroupContainer(this.targetGroup);
+                                        const targetHeader = targetGroupEl ? targetGroupEl.querySelector('.group-header') : null;
+                                        if (targetHeader) {
+                                            showDropIntoForElement(targetHeader);
+                                        } else {
+                                            clearDropIndicators();
+                                        }
+                                        return;
+                                    }
                                     if (this.targetIntent === 'bottom' && !found) {
                                         showDropLineAtListEnd();
                                         return;
@@ -4694,15 +4968,15 @@ class SkillsPanel {
                             }
                         },
 
-	                        onMouseUp(e) {
-	                            if (!this.isDragging) {
-	                                this.reset();
-	                                return;
-	                            }
+		                        onMouseUp(e) {
+		                            if (!this.isDragging) {
+		                                this.reset();
+		                                return;
+		                            }
 
-	                            this.isDragging = false;
-	                            this.cancelFrame();
-	                            this.finalizeDrop();
+		                            this.isDragging = false;
+		                            this.cancelFrame();
+		                            this.finalizeDrop();
 	                        },
 
 	                        finalizeDrop() {
@@ -4759,7 +5033,14 @@ class SkillsPanel {
                                 }
 	                            } else {
                                 let target = null;
-                                if (this.targetIntent === 'bottom') {
+                                if (this.targetIntent === 'into-group') {
+                                    target = {
+                                        kind: 'group-boundary',
+                                        groupName: this.targetGroup,
+                                        position: 'end',
+                                        newGroup: this.targetGroup || ''
+                                    };
+                                } else if (this.targetIntent === 'bottom') {
                                     target = {
                                         kind: 'bottom',
                                         newGroup: ''
@@ -5056,6 +5337,32 @@ class SkillsPanel {
                     // External drag-drop
                     (function() {
                         let isDraggingExternal = false;
+                        let externalDragResetTimer = 0;
+
+                        function resetExternalDragState() {
+                            isDraggingExternal = false;
+                            if (externalDragResetTimer) {
+                                clearTimeout(externalDragResetTimer);
+                                externalDragResetTimer = 0;
+                            }
+                            document.body.classList.remove('file-drop-active');
+                        }
+                        function hasFileDrag(event) {
+                            var dt = event && event.dataTransfer;
+                            if (!dt || !dt.types) return false;
+                            try {
+                                return Array.from(dt.types).indexOf('Files') !== -1;
+                            } catch (err) {
+                                return false;
+                            }
+                        }
+                        function armExternalDragReset() {
+                            if (!isDraggingExternal) return;
+                            if (externalDragResetTimer) clearTimeout(externalDragResetTimer);
+                            externalDragResetTimer = setTimeout(function() {
+                                resetExternalDragState();
+                            }, 1200);
+                        }
 
                         function normalizeNativeDroppedPath(nextPath) {
                             var normalizedPath = String(nextPath || '').trim();
@@ -5242,11 +5549,33 @@ class SkillsPanel {
                             }
                             return imported;
                         }
-                        document.addEventListener('dragenter', function(e) { if (e.dataTransfer && e.dataTransfer.types.indexOf('Files') !== -1) { isDraggingExternal = true; e.preventDefault(); e.stopImmediatePropagation(); document.body.classList.add('file-drop-active'); } }, true);
-                        document.addEventListener('dragover', function(e) { if (isDraggingExternal || (e.dataTransfer && e.dataTransfer.types.indexOf('Files') !== -1)) { isDraggingExternal = true; e.preventDefault(); e.stopImmediatePropagation(); e.dataTransfer.dropEffect = 'copy'; } }, true);
-                        document.addEventListener('dragleave', function(e) { if (isDraggingExternal && (e.clientX <= 0 || e.clientY <= 0 || e.clientX >= window.innerWidth || e.clientY >= window.innerHeight)) { isDraggingExternal = false; document.body.classList.remove('file-drop-active'); } }, true);
+                        document.addEventListener('dragenter', function(e) {
+                            if (!hasFileDrag(e)) return;
+                            isDraggingExternal = true;
+                            armExternalDragReset();
+                            e.preventDefault();
+                            e.stopImmediatePropagation();
+                            document.body.classList.add('file-drop-active');
+                        }, true);
+                        document.addEventListener('dragover', function(e) {
+                            if (!isDraggingExternal && !hasFileDrag(e)) return;
+                            isDraggingExternal = true;
+                            armExternalDragReset();
+                            e.preventDefault();
+                            e.stopImmediatePropagation();
+                            if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';
+                        }, true);
+                        document.addEventListener('dragleave', function(e) {
+                            if (!isDraggingExternal) return;
+                            if (e.clientX <= 0 || e.clientY <= 0 || e.clientX >= window.innerWidth || e.clientY >= window.innerHeight) {
+                                resetExternalDragState();
+                            }
+                        }, true);
                         document.addEventListener('drop', async function(e) {
-                            if (!isDraggingExternal) return; e.preventDefault(); e.stopImmediatePropagation(); isDraggingExternal = false; document.body.classList.remove('file-drop-active');
+                            if (!hasFileDrag(e) && !isDraggingExternal) return;
+                            e.preventDefault();
+                            e.stopImmediatePropagation();
+                            resetExternalDragState();
                             if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
                                 try {
                                     var nativePaths = await getNativeDroppedPaths(e.dataTransfer);
@@ -5272,6 +5601,15 @@ class SkillsPanel {
                                 }
                             }
                         }, true);
+                        window.addEventListener('blur', resetExternalDragState, true);
+                        document.addEventListener('visibilitychange', function() {
+                            if (document.visibilityState === 'hidden') resetExternalDragState();
+                        }, true);
+                        document.addEventListener('keydown', function(e) {
+                            if (e.key === 'Escape') resetExternalDragState();
+                        }, true);
+                        document.addEventListener('pointerdown', function() { resetExternalDragState(); }, true);
+                        document.addEventListener('mousedown', function() { resetExternalDragState(); }, true);
                     })();
                 </script>
             </body>

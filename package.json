@@ -3,7 +3,7 @@
 	"displayName": "Ultra Skills Editor",
 	"description": "A beautifully crafted, multi-language skills management extension for VS Code, Cursor, Trae (Global & CN), Windsurf, Antigravity, Qoder, and CodeBuddy. Create, edit, and organize AI skills.",
 	"publisher": "Michael-IT001",
-	"version": "2.6.30",
+	"version": "2.7.27",
 	"icon": "media/icon.png",
 	"engines": {
 		"vscode": "^1.60.0"
@@ -26,14 +26,14 @@
 		"onCommand:antigravity-skills-editor.openSkillsEditor",
 		"onCommand:antigravity-skills-editor.importSkillFromExplorer",
 		"onCommand:antigravity-skills-editor.exportSkill",
-        "*"
+		"*"
 	],
 	"main": "./src/extension.js",
 	"contributes": {
 		"commands": [
 			{
 				"command": "antigravity-skills-editor.openSkillsEditor",
-				"title": "Open Skills Editor"
+				"title": "Open My Skills / 打开我的技能"
 			},
 			{
 				"command": "antigravity-skills-editor.importSkillFromExplorer",
