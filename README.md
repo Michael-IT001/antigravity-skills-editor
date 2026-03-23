@@ -1,4 +1,4 @@
-# 🧠 Antigravity Skills Editor
+# 🧠 Ultra Skills Editor
 
 > A beautifully crafted, multi-language skills management extension for **VS Code, Cursor, Trae (Global & CN), Windsurf, Antigravity, Qoder, and CodeBuddy**.  
 > Create, edit, import (via **Shift + Drag**), and organize your AI skills — all from a single, elegant panel.
@@ -192,6 +192,9 @@ Contributions are welcome! Here are some ways you can help:
 - 🔒 Confirmation dialogs for destructive actions
 
 ---
+Crafted with ❤️ by Michael-IT001.
+
+---
 
 ## 📄 License
 
@@ -215,7 +218,3 @@ The Ultra Skills Editor is built using native VS Code APIs and Node.js, ensuring
 ---
 
 > **Made with ❤️ for the AI Developer Community**
-
-## 💡 Cursor to Antigravity Migration
-Moving from Cursor? Just click the **"Migrate from Cursor"** button in the sidebar header! It will automatically sync your extensions, themes, and MCP tools (like Pencil and Cline) to your new Antigravity environment. Reboot your editor once, and you're good to go.
-

@@ -1,8 +1,3 @@
-## v2.8.5
-- **Cursor Migration Wizard**: Added a one-click migration tool for users moving from Cursor to Antigravity. Automatically synchronizes extensions, themes, and MCP configurations (Pencil/Cline).
-- **Automatic Skill Discovery**: Antigravity users can now see their `.cursor/skills` folder directly in the sidebar without manual import.
-- **Antigravity Branding**: Updated extension display name and internal metadata for native Antigravity support.
-
 ## v2.8.4
 - **Routine Maintenance**: General performance optimizations, stability improvements, and documentation updates.
 
@@ -11,6 +6,17 @@
 
 ## v2.8.2
 - **Import Path Fix**: Fixed an issue where newly imported/created global skills were still saved to the legacy path (`~/.antigravity/skills/`) instead of the new standard path (`~/.gemini/antigravity/skills/`). The new path is now always used for writes, while legacy paths remain scannable for reading existing skills.
+
+## [2.8.6] - 2026-03-24
+### Changed
+- **Branding**: Reverted display name to "My Skills / 我的技能".
+- **UI**: Reverted to the clean 2.7.x interface (Removed Migration Wizard and cross-IDE discovery).
+- **Paths**: Enhanced native Antigravity path support (`~/.gemini/antigravity/skills/`).
+- **Isolation**: Each IDE now strictly manages its own skills scope.
+
+## [2.7.27] - 2026-02-15
+### Fixed
+- Internal bug fixes and performance optimizations.
 
 ## v2.8.1
 - **Unified Skill Storage Standard**: Updated default workspace paths to `.agents/skills/` across all supported IDEs (Cursor, VS Code, Antigravity, etc.) for consistency while maintaining backward compatibility.

@@ -1,9 +1,9 @@
 {
 	"name": "antigravity-skills-editor",
-	"displayName": "Antigravity Skills Editor",
+	"displayName": "My Skills / 我的技能",
 	"description": "A beautifully crafted, multi-language skills management extension for VS Code, Cursor, Trae (Global & CN), Windsurf, Antigravity, Qoder, and CodeBuddy. Create, edit, and organize AI skills.",
 	"publisher": "Michael-IT001",
-	"version": "2.8.5",
+	"version": "2.8.6",
 	"icon": "media/icon.png",
 	"engines": {
 		"vscode": "^1.60.0"

@@ -134,13 +134,7 @@ const translations = {
             "smart.security": "Security",
             "smart.collab": "Collaboration",
             "smart.utilities": "Utilities"
-        },
-        migrateBtn: "Migrate from Cursor",
-        migrateTitle: "Migration Wizard",
-        migrateMsg: "Would you like to migrate all your extensions, themes, and MCP tools from Cursor to Antigravity? This will copy your Cursor plugins to the Antigravity folder and register them.",
-        migrateSuccess: "Migration successful! Extensions and tools have been copied.",
-        migrateFailed: "Migration failed: {0}",
-        migrateRestart: "Please restart Antigravity to apply the changes."
+        }
     },
     'zh-cn': {
         name: "🇨🇳 简体中文",
