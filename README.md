@@ -76,16 +76,16 @@ The extension features a **Smart Native Routing Engine**. It automatically detec
 
 | Your IDE | Global Storage Path | Default Project Storage Path |
 |----------|-------------------|----------------------------|
-| **Cursor** | `~/.cursor/skills/` | `.cursor/rules/` |
-| **Windsurf** | `~/.windsurf/skills/` | `.windsurf/rules/` |
+| **Antigravity / Gemini** | `~/.gemini/antigravity/skills/` | `.agents/skills/` |
+| **Cursor** | `~/.cursor/skills/` | `.agents/skills/` |
+| **Windsurf** | `~/.codeium/windsurf/skills/` | `.windsurf/skills/` |
 | **Trae (Global)** | `~/.trae/skills/` | `.trae/skills/` |
-| **Trae CN (国内版)**| `~/.trae-cn/skills/` | `.trae-cn/skills/` |
-| **VS Code** | `~/.vscode/skills/` | `.github/skills/` |
-| **Antigravity** | `~/.antigravity/skills/` | `.agent/skills/` |
-| **Qoder** | `~/.qoder/skills/` | `.qoder/skills/` |
-| **CodeBuddy** | `~/.codebuddy/skills/` | `.codebuddy/skills/` |
+| **Trae CN (国内版)**| `~/.trae-cn/skills/` | `.trae/skills/` |
+| **VS Code** | `~/.copilot/skills/` | `.agents/skills/` |
+| **Qoder** | `~/.qoder/skills/` | `.agents/skills/` |
+| **CodeBuddy** | `~/.codebuddy/skills/` | `.agents/skills/` |
 
-*(Note: The extension also intelligently scans legacy and fallback directories like `cursor_skills`, `.vscode/skills`, etc., automatically deduplicating them in the UI.)*
+*(Note: The extension natively supports Windows environment variables and will automatically map to official Windows paths such as `%USERPROFILE%\.gemini\antigravity\skills\`.)*
 
 Each created skill becomes a folder containing a standardized `SKILL.md` file, maximizing compatibility with backend AI engines.
 

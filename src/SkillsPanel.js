@@ -195,8 +195,8 @@ class SkillsPanel {
         const map = {
             'cursor': {
                 globalCandidates: ['.cursor/skills'],
-                projectDir: '.cursor/rules',
-                projectCandidates: ['.cursor/skills', '.cursor', 'cursor_skills', '.cursor/prompts']
+                projectDir: '.agents/skills',
+                projectCandidates: ['.agents/skills', '.cursor/rules', '.cursor/skills', '.cursor', 'cursor_skills', '.cursor/prompts']
             },
             'trae': {
                 globalCandidates: ['.trae/skills'],
@@ -205,13 +205,13 @@ class SkillsPanel {
             },
             'trae-cn': {
                 globalCandidates: ['.trae-cn/skills'],
-                projectDir: '.trae-cn/skills',
-                projectCandidates: ['.trae-cn', '.trae/skills', 'trae_skills']
+                projectDir: '.trae/skills',
+                projectCandidates: ['.trae/skills', '.trae-cn/skills', '.trae-cn', 'trae_skills']
             },
             'qoder': {
                 globalCandidates: ['.qoder/skills'],
-                projectDir: '.qoder/skills',
-                projectCandidates: ['.qoder', 'qoder_skills', '.qoder/rules']
+                projectDir: '.agents/skills',
+                projectCandidates: ['.agents/skills', '.qoder/skills', '.qoder', 'qoder_skills', '.qoder/rules']
             },
             'windsurf': {
                 globalCandidates: ['.codeium/windsurf/skills', '.windsurf/skills'],
@@ -220,23 +220,23 @@ class SkillsPanel {
             },
             'codebuddy': {
                 globalCandidates: ['.codebuddy/skills'],
-                projectDir: '.codebuddy/skills',
-                projectCandidates: ['.codebuddy', 'codebuddy_skills']
+                projectDir: '.agents/skills',
+                projectCandidates: ['.agents/skills', '.codebuddy/skills', '.codebuddy', 'codebuddy_skills']
             },
             'vscode': {
                 globalCandidates: ['.copilot/skills'],
-                projectDir: '.github/skills',
-                projectCandidates: ['.github/prompts']
+                projectDir: '.agents/skills',
+                projectCandidates: ['.agents/skills', '.github/skills', '.github/prompts']
             },
             'ultra': {
-                globalCandidates: ['.ultra-skills/skills'],
-                projectDir: '.agent/skills',
-                projectCandidates: ['.agents/skills', 'skills', 'antigravity_skills']
+                globalCandidates: ['.gemini/antigravity/skills', '.antigravity/skills'],
+                projectDir: '.agents/skills',
+                projectCandidates: ['.agents/skills', '.agent/skills', 'skills', 'antigravity_skills']
             },
             'antigravity': {
-                globalCandidates: ['.antigravity/skills'],
-                projectDir: '.agent/skills',
-                projectCandidates: ['.agents/skills', 'skills', 'antigravity_skills']
+                globalCandidates: ['.gemini/antigravity/skills', '.antigravity/skills'],
+                projectDir: '.agents/skills',
+                projectCandidates: ['.agents/skills', '.agent/skills', 'skills', 'antigravity_skills']
             }
         };
         const ide = this._detectIDE();
@@ -265,6 +265,11 @@ class SkillsPanel {
 
     _getPrimaryGlobalSkillDir(idePaths) {
         const dirs = this._resolveGlobalSkillDirs(idePaths);
+        const ide = this._detectIDE();
+        if (ide === 'antigravity' || ide === 'ultra') {
+            // Always use the new standard path for imports and new skills
+            return dirs[0];
+        }
         const existing = dirs.find((dirPath) => fs.existsSync(dirPath));
         return existing || dirs[0];
     }

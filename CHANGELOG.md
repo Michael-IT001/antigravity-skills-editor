@@ -1,3 +1,14 @@
+## v2.8.3
+- **日常维护与优化**: 进行了底层的日常维护与性能调优，并同步更新了相关说明文档。
+
+## v2.8.2
+- **Import Path Fix**: Fixed an issue where newly imported/created global skills were still saved to the legacy path (`~/.antigravity/skills/`) instead of the new standard path (`~/.gemini/antigravity/skills/`). The new path is now always used for writes, while legacy paths remain scannable for reading existing skills.
+
+## v2.8.1
+- **Unified Skill Storage Standard**: Updated default workspace paths to `.agents/skills/` across all supported IDEs (Cursor, VS Code, Antigravity, etc.) for consistency while maintaining backward compatibility.
+- **Cross-Platform Path Recognition**: Enhanced path resolution logic to natively support both Windows and Mac directory structures, ensuring Windows `%USERPROFILE%` paths are correctly identified.
+- **Documentation Sync**: Updated built-in storage path tables to reflect the new unified standards.
+
 ## v2.7.27
 - **External File Drop Overlay No Longer Gets Stuck**: Reworked the webview’s external file-drag overlay cleanup so the blue drop frame is cleared consistently on drop, drag cancellation, blur, hidden visibility, Escape, and ordinary pointer clicks instead of relying on a narrow set of exit events.
 
