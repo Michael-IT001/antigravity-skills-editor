@@ -1,5 +1,8 @@
+## v2.8.4
+- **Routine Maintenance**: General performance optimizations, stability improvements, and documentation updates.
+
 ## v2.8.3
-- **日常维护与优化**: 进行了底层的日常维护与性能调优，并同步更新了相关说明文档。
+- **Routine Maintenance**: General bug fixes and under-the-hood optimization.
 
 ## v2.8.2
 - **Import Path Fix**: Fixed an issue where newly imported/created global skills were still saved to the legacy path (`~/.antigravity/skills/`) instead of the new standard path (`~/.gemini/antigravity/skills/`). The new path is now always used for writes, while legacy paths remain scannable for reading existing skills.
