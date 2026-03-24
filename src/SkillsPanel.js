@@ -307,8 +307,20 @@ class SkillsPanel {
                 continue;
             }
 
+            // If a SKILL.md exists in this directory, it's a valid folder-based skill.
             if (entries.some((entry) => entry.isFile() && entry.name === 'SKILL.md')) {
                 results.push(path.join(currentDir, 'SKILL.md'));
+            }
+
+            // New logic: Also treat standalone .md or .mdc files as skills in root scanned directories (but avoid recursing too deep for loose MDs to prevent noise)
+            const isNearRoot = (path.relative(rootPath, currentDir) === '' || !path.relative(rootPath, currentDir).includes(path.sep));
+            if (isNearRoot) {
+                for (const entry of entries) {
+                    if (entry.isFile() && (entry.name.endsWith('.md') || entry.name.endsWith('.mdc')) && entry.name !== 'SKILL.md') {
+                        const full = path.join(currentDir, entry.name);
+                        if (!results.includes(full)) results.push(full);
+                    }
+                }
             }
 
             for (const entry of entries) {
