@@ -1,37 +1,34 @@
-# Ultra Skills Editor
+# 🧠 Ultra Skills Editor
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/Michael-IT001/ultra-skills-editor/main/media/intro-demo.gif" alt="Ultra Skills Editor demo" width="100%" />
 </p>
 
-<p align="center">
-  <strong>Smart Grouping</strong> ·
-  <strong>Batch @ Copy</strong> ·
-  <strong>Favorites</strong> ·
-  <strong>Global / Project Import</strong> ·
-  <strong>16 Languages</strong>
-</p>
-
-> Local-first skill manager for **VS Code, Cursor, Trae (Global & CN), Windsurf, Antigravity, Qoder, and CodeBuddy**.  
-> Create, edit, import, organize, favorite, and batch-copy skills from one panel.
+> A multi-language skills management extension for **VS Code, Cursor, Trae (Global & CN), Windsurf, Antigravity, Qoder, and CodeBuddy**.  
+> Create, edit, import, and organize your AI skills from a single panel.
 
 ---
 
-## Quick Start
+## 💡 How to Open the Editor
 
-1. Open the editor from the status bar, the command palette, or the explorer context menu.
-2. Hold `Shift` and drag `.md` / `.mdc` files or folders into the panel to batch import them.
-3. Use the `@` cart to copy selected skills, star important ones with Favorites, and press `Ctrl/Cmd + S` to save instantly.
+There are **3 easy ways** to launch the Ultra Skills Editor:
+
+1. **Status Bar**: Click the wrench button in the status bar.
+2. **Right-Click Menu**: Right-click any `.md` / `.mdc` file or folder and choose **Import as Skill / 导入为技能**.
+3. **Command Palette**: Run `Open Skills Editor`.
+
+> 💡 **Shift + Drag to Import**  
+> Hold `Shift` and drag multiple `.md` / `.mdc` files or folders into the panel to batch import them.
 
 ---
 
-## Core Workflows
+## 📸 Core Workflows
 
 ### Smart Grouping
 
 ![Smart Grouping button inside Ultra Skills Editor](https://raw.githubusercontent.com/Michael-IT001/ultra-skills-editor/main/media/smart-grouping.png)
 
-Clean up a messy skill library in one click. Smart Grouping automatically sorts ungrouped skills into practical sections such as Frontend, Backend, AI, Testing, and Docs.
+Smart Grouping automatically sorts ungrouped skills into practical sections such as Frontend, Backend, AI, Testing, and Docs.
 
 - Useful right after large imports.
 - Keeps the sidebar readable with visible group counts.
@@ -59,28 +56,22 @@ Drop in multiple files or folders, preview how many skills will be created, choo
 
 ---
 
-## More Features
+## 🌍 Supported Languages
 
-- **Group drag-and-drop**: Reorder skills and groups directly in the sidebar.
-- **Group multi-select**: Use `Shift + Click` on group labels to move multiple groups together.
-- **Batch export**: Export entire skill folders, not just a single markdown file.
-- **Duplicate**: Clone an existing skill to reuse it as a template.
-- **Keyboard shortcut**: Toggle the editor with `Cmd + Shift + K` on Mac or `Ctrl + Shift + K` on Windows.
-
----
-
-## Supported Languages
-
-🇺🇸 English · 🇨🇳 简体中文 · 🇹🇼 繁體中文 · 🇯🇵 日本語  
-🇩🇪 Deutsch · 🇪🇸 Español · 🇫🇷 Français · 🇮🇹 Italiano  
-🇰🇷 한국어 · 🇧🇷 Português · 🇷🇺 Русский · 🇹🇷 Türkçe  
-🇵🇱 Polski · 🇨🇿 Čeština · 🇸🇦 العربية · 🇻🇳 Tiếng Việt
+| | | | |
+|---|---|---|---|
+| 🇺🇸 English | 🇨🇳 简体中文 | 🇹🇼 繁體中文 | 🇯🇵 日本語 |
+| 🇩🇪 Deutsch | 🇪🇸 Español | 🇫🇷 Français | 🇮🇹 Italiano |
+| 🇰🇷 한국어 | 🇧🇷 Português | 🇷🇺 Русский | 🇹🇷 Türkçe |
+| 🇵🇱 Polski | 🇨🇿 Čeština | 🇸🇦 العربية | 🇻🇳 Tiếng Việt |
 
 The interface follows the editor language on first launch, and you can switch it later from the language selector in the sidebar footer.
 
 ---
 
-## Installation
+## 🚀 Getting Started
+
+### Installation
 
 1. Download the latest `.vsix` from the [Releases](https://github.com/Michael-IT001/antigravity-skills-editor/releases) page.
 2. Open the Extensions panel in Antigravity, Cursor, or another supported editor.
@@ -89,29 +80,39 @@ The interface follows the editor language on first launch, and you can switch it
 
 ---
 
-## Storage Routing
+## 📁 How Skills Are Stored (Dynamic Routing)
 
-- **Antigravity / Gemini**: Global `~/.gemini/antigravity/skills/` · Project `.agents/skills/`
-- **Cursor**: Global `~/.cursor/skills/` · Project `.agents/skills/`
-- **Windsurf**: Global `~/.codeium/windsurf/skills/` · Project `.windsurf/skills/`
-- **Trae (Global)**: Global `~/.trae/skills/` · Project `.trae/skills/`
-- **Trae CN (国内版)**: Global `~/.trae-cn/skills/` · Project `.trae/skills/`
-- **VS Code**: Global `~/.copilot/skills/` · Project `.agents/skills/`
-- **Qoder**: Global `~/.qoder/skills/` · Project `.agents/skills/`
-- **CodeBuddy**: Global `~/.codebuddy/skills/` · Project `.agents/skills/`
+Global and project skills are routed to each IDE's native directories.
+
+| Your IDE | Global Storage Path | Default Project Storage Path |
+|----------|-------------------|----------------------------|
+| **Antigravity / Gemini** | `~/.gemini/antigravity/skills/` | `.agents/skills/` |
+| **Cursor** | `~/.cursor/skills/` | `.agents/skills/` |
+| **Windsurf** | `~/.codeium/windsurf/skills/` | `.windsurf/skills/` |
+| **Trae (Global)** | `~/.trae/skills/` | `.trae/skills/` |
+| **Trae CN (国内版)** | `~/.trae-cn/skills/` | `.trae/skills/` |
+| **VS Code** | `~/.copilot/skills/` | `.agents/skills/` |
+| **Qoder** | `~/.qoder/skills/` | `.agents/skills/` |
+| **CodeBuddy** | `~/.codebuddy/skills/` | `.agents/skills/` |
 
 Windows paths are mapped automatically to the corresponding `%USERPROFILE%` locations.
 
 ---
 
-## Security & Privacy
+## 🔒 Security & Privacy
 
 - **100% Local**: Skill processing, file operations, and grouping run locally.
 - **No External Calls**: The extension does not send your skills, file paths, or workspace data to external services.
 - **No Telemetry**: Your usage stays inside your editor and filesystem.
 
+## 💻 Cross-Platform Compatibility
+
+- **macOS** (Intel & Apple Silicon)
+- **Windows** (10 / 11)
+- **Linux** (Ubuntu, Debian, and similar distributions)
+
 ---
 
-## License
+## 📄 License
 
 This project is licensed under the [MIT License](https://github.com/Michael-IT001/antigravity-skills-editor/blob/main/LICENSE).
