@@ -1,7 +1,7 @@
 # 🧠 Ultra Skills Editor
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Michael-IT001/ultra-skills-editor/main/media/intro-demo.gif" alt="Ultra Skills Editor demo" width="100%" />
+  <img src="https://raw.githubusercontent.com/Michael-IT001/ultra-skills-editor/main/media/intro-demo.gif" alt="Ultra Skills Editor demo" width="900" />
 </p>
 
 > A multi-language skills management extension for **VS Code, Cursor, Trae (Global & CN), Windsurf, Antigravity, Qoder, and CodeBuddy**.  
@@ -26,7 +26,9 @@ There are **3 easy ways** to launch the Ultra Skills Editor:
 
 ### Smart Grouping
 
-![Smart Grouping button inside Ultra Skills Editor](https://raw.githubusercontent.com/Michael-IT001/ultra-skills-editor/main/media/smart-grouping.png)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Michael-IT001/ultra-skills-editor/main/media/smart-grouping.png" alt="Smart Grouping button inside Ultra Skills Editor" width="760" />
+</p>
 
 Smart Grouping automatically sorts ungrouped skills into practical sections such as Frontend, Backend, AI, Testing, and Docs.
 
@@ -36,7 +38,9 @@ Smart Grouping automatically sorts ungrouped skills into practical sections such
 
 ### Batch `@` Copy + Favorites
 
-![Selected skills with batch @ copy and favorite stars](https://raw.githubusercontent.com/Michael-IT001/ultra-skills-editor/main/media/clipboard-favorites.png)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Michael-IT001/ultra-skills-editor/main/media/clipboard-favorites.png" alt="Selected skills with batch @ copy and favorite stars" width="760" />
+</p>
 
 Select multiple skills with the `@` cart workflow to copy them into the clipboard as markdown-ready references, then star important ones to keep them close at hand.
 
@@ -46,7 +50,9 @@ Select multiple skills with the `@` cart workflow to copy them into the clipboar
 
 ### Batch Import with Destination Choice
 
-![Batch import modal with Global and Project destination choice](https://raw.githubusercontent.com/Michael-IT001/ultra-skills-editor/main/media/batch-import-destination.png)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Michael-IT001/ultra-skills-editor/main/media/batch-import-destination.png" alt="Batch import modal with Global and Project destination choice" width="760" />
+</p>
 
 Drop in multiple files or folders, preview how many skills will be created, choose how to handle naming conflicts, and decide whether the import should be saved as **Global** or only for the **current project**.
 
