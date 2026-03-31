@@ -1,15 +1,16 @@
-# 🧠 Ultra Skills Editor
+# Ultra Skills Editor
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/Michael-IT001/ultra-skills-editor/main/media/intro-demo.gif" alt="Ultra Skills Editor demo" width="900" />
 </p>
 
-> A multi-language skills management extension for **VS Code, Cursor, Trae (Global & CN), Windsurf, Antigravity, Qoder, and CodeBuddy**.  
-> Create, edit, import, and organize your AI skills from a single panel.
+A multi-language skills management extension for **VS Code, Cursor, Trae (Global & CN), Windsurf, Antigravity, Qoder, and CodeBuddy**.
+
+Create, edit, import, and organize your AI skills from a single panel.
 
 ---
 
-## 💡 How to Open the Editor
+## How to Open the Editor
 
 There are **3 easy ways** to launch the Ultra Skills Editor:
 
@@ -17,12 +18,12 @@ There are **3 easy ways** to launch the Ultra Skills Editor:
 2. **Right-Click Menu**: Right-click any `.md` / `.mdc` file or folder and choose **Import as Skill / 导入为技能**.
 3. **Command Palette**: Run `Open Skills Editor`.
 
-> 💡 **Shift + Drag to Import**  
+> **Shift + Drag to Import**  
 > Hold `Shift` and drag multiple `.md` / `.mdc` files or folders into the panel to batch import them.
 
 ---
 
-## 📸 Core Workflows
+## Core Workflows
 
 ### Smart Grouping
 
@@ -89,7 +90,29 @@ There are **3 easy ways** to launch the Ultra Skills Editor:
 
 ---
 
-## 🌍 Supported Languages
+## Useful Details
+
+### Creating Skills
+
+Click the **+** button in the sidebar header, enter a name, and choose whether the skill should be saved as **Global** or **Project**.
+
+### Exporting and Reusing Skills
+
+- Export works at the **folder level**, not just the markdown file.
+- If multiple skills are selected, export can run in batch.
+- Use **Duplicate** to clone an existing skill and reuse it as a template.
+
+### Deleting Skills
+
+Use the **red trash icon** in the editor toolbar. A confirmation dialog appears before the skill folder is removed.
+
+### Language Switcher
+
+Use the globe icon and dropdown at the bottom of the sidebar to switch between the supported languages at any time.
+
+---
+
+## Supported Languages
 
 | | | | |
 |---|---|---|---|
@@ -102,9 +125,7 @@ The interface follows the editor language on first launch, and you can switch it
 
 ---
 
-## 🚀 Getting Started
-
-### Installation
+## Installation
 
 1. Download the latest `.vsix` from the [Releases](https://github.com/Michael-IT001/antigravity-skills-editor/releases) page.
 2. Open the Extensions panel in Antigravity, Cursor, or another supported editor.
@@ -113,7 +134,7 @@ The interface follows the editor language on first launch, and you can switch it
 
 ---
 
-## 📁 How Skills Are Stored (Dynamic Routing)
+## Storage Routing
 
 Global and project skills are routed to each IDE's native directories.
 
@@ -132,13 +153,13 @@ Windows paths are mapped automatically to the corresponding `%USERPROFILE%` loca
 
 ---
 
-## 🔒 Security & Privacy
+## Security & Privacy
 
 - **100% Local**: Skill processing, file operations, and grouping run locally.
 - **No External Calls**: The extension does not send your skills, file paths, or workspace data to external services.
 - **No Telemetry**: Your usage stays inside your editor and filesystem.
 
-## 💻 Cross-Platform Compatibility
+## Cross-Platform Compatibility
 
 - **macOS** (Intel & Apple Silicon)
 - **Windows** (10 / 11)
@@ -146,6 +167,6 @@ Windows paths are mapped automatically to the corresponding `%USERPROFILE%` loca
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the [MIT License](https://github.com/Michael-IT001/antigravity-skills-editor/blob/main/LICENSE).
