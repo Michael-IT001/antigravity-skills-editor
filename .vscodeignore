@@ -10,3 +10,8 @@ test
 tests
 coverage
 .env
+marketplace-preview.html
+media/intro-demo.gif
+media/smart-grouping.png
+media/clipboard-favorites.png
+media/batch-import-destination.png

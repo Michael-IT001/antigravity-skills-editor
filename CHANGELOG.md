@@ -1,3 +1,6 @@
+## v2.8.40
+- **Clean Source Package Rebuilt**: Rebuilt the VSIX from the source repository with `vsce` instead of repacking an installed extension, removing stale install metadata and reducing package-structure review noise for Open VSX.
+
 ## v2.8.39
 - **Review-Friendly Metadata Cleanup**: Removed the unnecessary wildcard activation event, kept startup activation only for the visible status-bar entry, and aligned repository-facing links with the `ultra-skills-editor` GitHub project.
 
