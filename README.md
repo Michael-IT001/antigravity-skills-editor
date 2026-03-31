@@ -127,7 +127,7 @@ The interface follows the editor language on first launch, and you can switch it
 
 ## Installation
 
-1. Download the latest `.vsix` from the [Releases](https://github.com/Michael-IT001/antigravity-skills-editor/releases) page.
+1. Download the latest `.vsix` from the [Releases](https://github.com/Michael-IT001/ultra-skills-editor/releases) page.
 2. Open the Extensions panel in Antigravity, Cursor, or another supported editor.
 3. Open the extensions menu and choose **Install from VSIX...**.
 4. Select the package and reload the window.
@@ -169,4 +169,4 @@ Windows paths are mapped automatically to the corresponding `%USERPROFILE%` loca
 
 ## License
 
-This project is licensed under the [MIT License](https://github.com/Michael-IT001/antigravity-skills-editor/blob/main/LICENSE).
+This project is licensed under the [MIT License](https://github.com/Michael-IT001/ultra-skills-editor/blob/main/LICENSE).

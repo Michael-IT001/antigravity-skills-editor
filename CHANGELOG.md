@@ -1,3 +1,6 @@
+## v2.8.39
+- **Review-Friendly Metadata Cleanup**: Removed the unnecessary wildcard activation event, kept startup activation only for the visible status-bar entry, and aligned repository-facing links with the `ultra-skills-editor` GitHub project.
+
 ## v2.8.38
 - **Release Metadata Synced**: Bumped the extension to `2.8.38` and completed the recent changelog entries so the package metadata now matches the shipped feature set without changing `2.8.37` functionality.
 
